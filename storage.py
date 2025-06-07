@@ -76,6 +76,30 @@ class Storage:
             currpath = folderpath[0][0]
             
         return (pathToHome)
+    
+    def getPathSharedBack(self, givenpath):
+        pathToHome = []
+        currpath = givenpath
+        while currpath != "":
+            fail = True
+            fileId = Modules.selectFromDB(f"SELECT id, uploadUserId FROM files WHERE filehash = '{currpath}' and share = '1' and folder = '1'")
+
+            if (len(fileId) != 0):
+                if (len(fileId[0]) != 0):
+                    sharedpath = Modules.selectFromDB(f"SELECT id FROM usershare WHERE reciver = '{self.acc.getUserId()}' AND sender = '{fileId[0][1]}' AND fileId = '{fileId[0][0]}'")
+
+                    if (len(sharedpath) != 0):
+                        if (len(sharedpath[0]) != 0):
+                            folderpath = Modules.selectFromDB(f"SELECT path, name FROM files WHERE folder = '1' AND uploadUserId = '{fileId[0][1]}' AND filehash = '{currpath}'")
+                            
+                            if (len(folderpath) == 1):
+                                if (len(folderpath[0]) == 2):
+                                    fail = False
+                                    pathToHome.insert(0,[currpath, folderpath[0][1]])
+                                    currpath = folderpath[0][0]
+            if (fail):
+                break        
+        return (pathToHome)
         
     def bitToMB(self, bit):
         return bit/1048576
@@ -125,7 +149,7 @@ class Storage:
         # id INTEGER, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER
         foundFiles = Modules.selectFromDB(f"SELECT * FROM usershare WHERE reciver = {self.acc.getUserId()}")
         for file in foundFiles:
-            targetFile = Modules.selectFromDB(f"SELECT * FROM files WHERE id = '{file[3]}' AND uploadUserId = '{file[1]}'")
+            targetFile = Modules.selectFromDB(f"SELECT * FROM files WHERE id = '{file[3]}' AND uploadUserId = '{file[1]}' AND share = '1' AND path = '{path}'")
             if (len(targetFile) != 1):
                 continue
             targetFile = targetFile[0]
@@ -299,9 +323,9 @@ class Storage:
 
         session['lastStoragePath'] = path
         
-        pathWay = self.getPathBack(path)
-        data['navHelp'] = render_template("smalltemplate/workpath.twig", paths=pathWay)
-
+        pathWay = self.getPathSharedBack(path)
+        data['navHelp'] = render_template("smalltemplate/workpath.twig", paths=pathWay, share=True)
+        print(path)
         if (len(pathWay) <= 1):
             ahrefpath = "storage/shared"
         else:
@@ -331,7 +355,7 @@ class Storage:
                             userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0], fileToDownload[0]))
                             fileExt = self.splitFilename(fileToDownload[2])[1]
                             return send_from_directory(userFilesPath, (fileToDownload[1] + fileExt), as_attachment=True, download_name=(fileToDownload[2]))
-                        
+        print(ahrefpath)
         data['files'] = self.getSharedFilesForPath(path, shared=True)
         data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
         return render_template("storage/home.twig", data=data)

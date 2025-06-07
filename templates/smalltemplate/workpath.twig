@@ -1,5 +1,9 @@
 <div class="navhelprow">
-    <a href="/storage/home">Home</a>
+    {% if share %}
+        <a href="/storage/shared">Shared</a>
+    {% else %}
+        <a href="/storage/home">Home</a>
+    {% endif %}
     {% for path in paths %}
         <span class="material-symbols-outlined">chevron_right</span>
         <a href="{{path[0]}}">{{path[1]}}</a>
