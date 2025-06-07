@@ -1,0 +1,59 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+        <title>FileShare</title>
+    </head>
+    <body>
+        <noscript><h1>PLEASE ENABLE JAVASCRIPT OR SITE MIGHT NOT WORK CORRECTLY</h1></noscript>
+        {{ data['foldernameHTML'] }}
+        <div class="fullscreenpopup">
+            <h1>ok</h1>
+        </div>
+        <div class="centerBox">
+            <h4>Search: <input id="storageSearch" class="searchInput searchPadding" type="text" autocomplete="off"> <button class="searchPadding" onclick="filter(this)">Find</button></h4>
+        </div>
+        <div class="leftSidebar">
+            <div class="centerBox">
+                <ul>
+                    <li class="menuitem"><a href="/storage/home"><span class="material-symbols-outlined">home</span>Home</a></li>
+                    <li class="menuitem"><a href="/storage/upload"><span class="material-symbols-outlined">upload</span>Upload</a></li>
+                    <li class="menuitem"><a href="/storage/makefolder"><span class="material-symbols-outlined">folder</span>Create Folder</a></li>
+                    <li class="menuitem"><a href="/storage/logout"><span class="material-symbols-outlined">logout</span>Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="storageContent">
+            ok
+        </div>
+
+        <script>
+        function filter(elem) {
+            var search = document.getElementById("storageSearch").value;
+            if (search.length == 0) {
+                alert("Tom ruta");
+            }
+        }
+        {# Högerklick menyn
+        if (document.addEventListener) {
+            document.addEventListener('contextmenu', function(e) {
+                alert("You've tried to open context menu"); //here you draw your own menu
+                e.preventDefault();
+            }, false);
+            } else {
+            document.attachEvent('oncontextmenu', function() {
+                alert("You've tried to open context menu");
+                window.event.returnValue = false;
+            });
+        } 
+        #}
+
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+        </script>
+    </body>
+</html>

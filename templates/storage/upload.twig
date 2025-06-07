@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+        <title>FileShare</title>
+    </head>
+    <body>
+        <noscript><h1>PLEASE ENABLE JAVASCRIPT OR SITE MIGHT NOT WORK CORRECTLY</h1></noscript>
+        <div class="centerBox">
+           &nbsp;
+        </div>
+        <div class="leftSidebar">
+            {{ data['navbarHTML'] }}
+        </div>
+        
+        <div class="storageContent">
+            <div class="centerBox">
+                <form action = "/storage/upload" method = "POST" class="centerBox" enctype = "multipart/form-data">
+                    <div class="centerBox">
+                        <label for="upload" class="selectFileBtn">Select File</label>
+                        <input type="file" name="file" id="upload" onchange="updatePreviewName(this)">
+                    </div>
+                    <div class="centerBox">
+                        <h2 id="filename" style="color: white;">Selected File: None</h2>
+                    </div>
+                    <div class="centerBox">
+                        <button type = "submit" class="defaultButton">Upload File</button>
+                    </div>
+                </form>  
+            </div>
+            <br><br>
+        </div>
+        
+    </body>
+    <script>
+
+
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+    </script>
+</html>
+
+
+
+

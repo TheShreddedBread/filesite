@@ -1,0 +1,14 @@
+<div class="fullscreenpopup" onclick="window.location.href='/{{backpath}}';">
+    <div class="centerBox">
+        <h1>Are you sure you want to delete it?</h1><br>
+        <h3>The file: {{filename}} will be deleted forever<br>and this action can not be undone</h3>
+        <div class="centerBox displayBesides">
+            <input class="cancelDelete" value="Cancel" type="submit" onclick="window.location.href='/{{backpath}}';"/>
+            <form action="" method="POST">
+                <input name="type" value="{{fileDeleteHash}}" hidden />
+                <input type="text" name="foldername" autocomplete="off" hidden/>
+                <input class="confirmedDelete" value="Yes, delete it" type="submit" />
+            </form>
+        </div>
+    </div>
+</div>

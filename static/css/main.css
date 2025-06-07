@@ -1,0 +1,16 @@
+@font-face {
+    font-family: "Bodo_Amat-otf";
+    src: url("fonts/Bodo Amat.otf");
+}
+
+@font-face {
+    font-family: "Bodo_Amat-ttf";
+    src: url("fonts/Bodo Amat.ttf");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.1rem;
+    font-family: 'Bodo_AmainContHeadermat-otf', 'Bodo_Amat-ttf', 'Arial';
+}

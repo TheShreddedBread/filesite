@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <title>FileShare</title>
+</head>
+<body>
+    <div class="centerBox">
+        <h2>Welcome to the FileShare website</h2>
+        <p>Hope it might help you store and share files</p>
+        {% if loggedIn %}
+        <div class="centerBox">
+            <a href="./storage/home"><button class="defaultButton">Go to storage</button></a>
+        </div>
+        {% else %}
+         <div class="centerBox">
+            <a href="./login"><button class="defaultButton">Login</button></a>
+        </div>
+        {% endif %}
+    </div>
+    
+</body>
+</html>

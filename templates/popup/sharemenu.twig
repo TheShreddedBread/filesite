@@ -1,0 +1,38 @@
+<div class="fullscreenpopup" onclick="window.location.href='/{{backpath}}'; StopEventPropagation(this);">
+    <div class="centerBox popupBox" onclick="StopEventPropagation(event);">
+        <h3>Share settings for:</h3>
+        <h3>{{filename}}</h3>
+        <br><br>
+        <form method="POST" id="toggleshare" onclick="StopEventPropagation(this);">
+            <input name="type" value="toggleshare" hidden>
+            <p>Share enabled</a>
+            <label class="switch">
+                <input type="checkbox" onchange='submitForm("toggleshare")' name='sharestate' value='allowed' {% if checked %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+        </form>
+        <br><br>
+        {% if checked %}
+        <div style="display: flex;">
+            <form id="mailInput" onclick="StopEventPropagation(this);">
+                <label for="usermail">Add user</label>
+                <input type="email" name="usermail" id="newusermail" class="textInputWide" placeholder="User's mail"/> 
+            </form>
+            <button style="margin-left: 15px" onclick="addUser(this)" class="defaultButton"><span class="material-symbols-outlined"> person_add </span>Add</button>   
+        </div>
+        <br><br>
+        <h3>Users with access</h3><br>
+        <form method="POST" id="maillist" onclick="StopEventPropagation(this);">
+            <input name="type" value="updateusers" hidden>
+            {% for user in users %}
+            <div class="mailitem">
+                <span>{{ user[2] }}</span>
+                <input name="addedmail" value="{{ user[2] }}" hidden>
+                <button onclick="deleteUser(this)"><span class="material-symbols-outlined"> person_remove </span></button>
+            </div>
+            {% endfor %}
+        </form>
+        <button onclick="document.getElementById('maillist').submit()">Update access</button>
+        {% endif %}
+    </div>
+</div>

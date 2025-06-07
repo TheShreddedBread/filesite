@@ -1,0 +1,8 @@
+<div class="navhelprow">
+    <a href="/storage/home">Home</a>
+    {% for path in paths %}
+        <span class="material-symbols-outlined">chevron_right</span>
+        <a href="{{path[0]}}">{{path[1]}}</a>
+    {% endfor %}
+    <br>
+</div>

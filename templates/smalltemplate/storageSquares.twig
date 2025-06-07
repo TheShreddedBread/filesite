@@ -1,0 +1,35 @@
+<div class="uploadedFile" id="{{data['id']}}" onclick="StopEventPropagation(event);">
+    <div class="squarepage1">
+        <p class="fileOptions openFileOptionsBtn"><span class="material-symbols-outlined" onclick="openFileMenu(this);">more_vert</span></p>
+        {% if data['folder'] and not data['shared'] %}
+        <a href="/storage/home/{{data['path']}}">
+        {% elif data['folder'] and data['shared'] %}
+        <a href="/storage/shared/{{data['path']}}">
+        {% endif %}
+        <p class="fileName" hidden>{{data['name']}}</p>
+        <p class="fileSize" hidden>{{data['size']}}</p>
+        <p class="fileNameFancy">{{data['fancyname']}}</p>
+        {% if data['folder'] %}
+        <p class="filePreview"><span class="material-symbols-outlined">folder</span></p>
+        {% else %}
+        <p class="filePreview"><span class="material-symbols-outlined">description</span></p>
+        {% endif %}
+        {% if data['folder'] %}
+        </a>
+        {% endif %}
+    </div>
+    <div class="squarepage2" hidden="true">
+        <p class="fileOptions closeFileOptionsBtn"><span class="material-symbols-outlined" onclick="closeFileMenu(this);">close</span></p>
+        <div class="squarepage2btn">
+          {% if not data['folder'] %}
+            <button onclick="alerFileInfo(this)"  class="page2button"><span class="material-symbols-outlined">info</span>Information</button><br>
+          
+            <form method="POST" name="download"><input type="text" name="type" value="download" hidden/><input type="number" name="id" value="{{data['id']}}" hidden/><button class="page2button"><span class="material-symbols-outlined">download</span>Download</button></form>
+            {% endif %}
+            {% if not data['shared'] %}
+            <form method="POST" name="shareid"><input type="text" name="type" value="sharemenu" hidden/><input type="number" name="id" value="{{data['id']}}" hidden/><button class="page2button"><span class="material-symbols-outlined">share</span>Share</button></form>
+            <form method="POST" name="deleteId"><input type="text" name="type" value="askfordelete" hidden/><input type="number" name="id" value="{{data['id']}}" hidden/><button class="page2button deleteBtn"><span class="material-symbols-outlined">delete_forever</span>Delete</button></form><br>
+            {% endif %}
+        </div>
+    </div>
+</div>

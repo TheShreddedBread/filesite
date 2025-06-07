@@ -1,0 +1,510 @@
+@font-face {
+    font-family: "Bodo_Amat-otf";
+    src: url("fonts/Bodo Amat.otf");
+}
+
+@font-face {
+    font-family: "Bodo_Amat-ttf";
+    src: url("fonts/Bodo Amat.ttf");
+}
+
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    src: url("fonts/googleicons.ttf") format('woff');
+  }
+
+* {
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.2rem;
+}
+
+body {
+    font-family: 'Bodo_AmainContHeadermat-otf', 'Bodo_Amat-ttf', 'Arial';
+    color: rgb(236, 236, 236);
+    background-color: rgb(41, 41, 41);
+}
+
+.topSpace {
+    margin-top: 3rem;
+}
+
+.centerBox {
+    margin: auto;
+    margin-top: 3rem;
+    width: fit-content;
+    height: fit-content;
+}
+
+.defaultButton {
+    border: 2px solid white;
+    background-color: gray;
+    border-radius: 5px;
+    color: white;
+    padding: 5px 20px;
+}
+
+.defaultButton:hover {
+    cursor: pointer;
+}
+
+.formBox {
+    border: 2px solid white;
+    text-align: center;
+    padding: 3rem;
+    border-radius: 5px;
+}
+
+.formBox > form {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.formBox > form > input {
+    background-color: gray;
+    color: white;
+    padding: 0.2rem;
+}
+
+.errorRed {
+    text-align: center;
+    font-style: italic;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.6rem;
+    color: red;
+}
+
+.searchPadding {
+    padding: 0.4rem 0.2rem;
+    border-radius: 5px;
+}
+
+.leftSidebar {
+    padding: 1rem;
+    border: 1px solid white;
+    border-radius: 0px 10px 10px 0px;
+    min-width: fit-content;
+    height: 80%;
+    overflow-y: auto;
+    float: left;
+    background-color: white;
+    color: black;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+.menuitem {
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    height: fit-content;
+    margin: 2rem 0rem;
+    transition: all ease 1s;
+}
+
+.menuitem > a {
+    border-radius: 5px;
+    font-size: 1.2rem;
+    border: 2px solid black;
+    padding: 0.2rem 0.4rem;
+    text-decoration: none;
+    color: black;
+    transition: all ease 1s;
+}
+
+.menuitem:hover {
+    transform: scale(1.1);
+}
+
+.menuitem > a:hover {
+    background-color: rgb(132, 132, 132);
+}
+
+
+.storageContent {
+    display: flex;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 0.5rem;
+    background-color: rgb(61, 61, 61);
+    width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    float: right;
+    margin-right: 2%;
+    color: black;
+}
+
+.uploadedFile {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    margin: 30px;
+    border: 3px solid black;
+    border-radius: 5px;
+    padding: 0.5rem;
+    background-color: rgb(102, 175, 195);
+}
+
+.squarepage1 > a {
+    text-decoration: none;
+    font-style: italic;
+    color: rgb(0, 0, 0);
+}
+
+.squarepage1 > a > p > span {
+    text-shadow: 3px 2px rgba(0, 0, 0, 0.523);
+    color: rgb(60, 60, 60);
+}
+
+.fileName {
+    text-decoration: underline;
+    font-size: 1.2rem;
+}
+
+.filePreview {
+    text-align: center;
+}
+
+.filePreview > span {
+    font-size:10em;
+}
+
+.fileOptions {
+    position: absolute;
+    bottom: 10px;
+    right: 0;
+}
+
+.fileOptions > span:hover {
+    cursor: pointer;
+}
+
+.closeFileOptionsBtn {
+    transform: scale(1.1);
+}
+
+.squarepage2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.squarepage2btn {
+    margin: auto;
+    margin-top: 5px;
+    width: fit-content;
+    height: fit-content;
+    align-items: center;   
+    align-content: center;
+}
+
+.page2button {
+    width: 160px;
+    margin: 8px;
+    height: 30px;
+    border: 2px solid black;
+    font-size: 15px;
+    border-radius: 5px;
+}
+
+.page2button:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.deleteBtn:hover {
+    color: red;
+    border: 2px dashed red;
+}
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    margin-right: 5px;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    vertical-align: sub;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+}
+
+.container {
+    width: fit-content;
+}
+
+.selectFileBtn {
+    margin: auto;
+    width: 10rem;
+    height: 2rem;
+    display: block;
+    cursor: pointer;
+    color: black;
+    background-color: rgb(255, 255, 255);
+    border: 2px solid black;
+    padding: 2rem 2rem 1rem 2rem;
+    text-align: center;
+    border-radius: 10px;
+}
+  
+input[type="file"] {
+    display: block;
+    width: 0rem;
+    height: 0rem;
+    display: hidden;
+    clip: rect(0px 0px 0px 0px);
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.fullscreenpopup {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+}
+
+.fullscreenpopup:hover {
+    cursor: default;
+}
+
+.alertpopup {
+    position: absolute;
+    left: 0;
+    top: 10%;
+    width: fit-content;
+    margin: auto;
+    z-index: 100;
+}
+
+.successpopup {
+    background-color: rgb(48, 146, 48);
+    color: rgb(207, 207, 207);
+    border-color: rgb(207, 207, 207);
+    border-radius: 5px;
+}
+
+.popupBox {
+    z-index: 50;
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid rgb(193, 193, 193);
+    background-color: rgb(62, 62, 62);
+}
+
+.popupBox:hover {
+    cursor: default;
+}
+
+.cancelDelete {
+    border: 2px solid white;
+    font-size: 18px;
+    background-color: rgb(111, 109, 109);
+    border-radius: 5px;
+    color: white;
+    padding: 20px 50px;
+}
+
+
+.confirmedDelete {
+    border: 2px solid white;
+    font-size: 18px;
+    background-color: rgb(154, 70, 70);
+    border-radius: 5px;
+    color: white;
+    padding: 20px 50px;
+}
+
+.displayBesides {
+    display: flex; 
+    flex-wrap: nowrap;
+} 
+
+.displayBesides > * {
+    margin: 3rem;
+}
+
+.textInputWide {
+    height: 30px;
+    padding: 5px;
+}
+
+.progressDiv {
+    margin-top: 10px;
+    height: 10px;
+    width: 80%;
+    background-color: rgb(67, 67, 67);
+    padding: 5px;
+    border-radius: 5px;
+}
+  
+.progressBar {
+    max-width: 100%;
+    border-radius: 2px;
+    background-color: rgb(6, 161, 181);
+    height: 100%;
+}
+
+.navhelprow {
+    display: flex;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 0.5rem;
+    width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    float: right;
+    margin-right: 2%;
+}
+
+.navhelprow > a {
+    font-size: 25px;
+    text-decoration: none;
+    border: 2px solid white;
+    padding: 5px 20px;
+    border-radius: 5px;
+    color: white;
+}
+
+.navhelprow > span {
+    padding: 5px;
+    font-size: 30px;
+}
+
+.userInfoBox {
+    color: white;
+    margin: 2rem;
+}
+
+.userInfoBox > h5 {
+    font-size: 20px;
+    text-decoration: underline;
+}
+
+.askupdatebox {
+    border-radius: 5px;
+    background-color: rgb(43, 43, 43);
+    padding: 2rem;
+}
+
+.textInputWider {
+    width: 100%;
+}
+
+.confirmUpdate {
+    border: 2px solid white;
+    font-size: 18px;
+    background-color: rgb(92, 174, 155);
+    border-radius: 5px;
+    color: white;
+    padding: 20px 50px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+
+.mailitem {
+    display: flex; 
+    padding: 7px;
+    border-radius: 2px;
+    background-color: rgb(39, 39, 39); 
+    margin-bottom: 10px;
+    width: fit-content;
+}
+
+.mailitem > button {
+    background-color: grey;
+    padding: 2px;
+}
+ 
+.mailitem > button > span {
+    font-size: 15px;
+}
+
+
+
+
+
+
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  .switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }

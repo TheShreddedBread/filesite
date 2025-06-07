@@ -1,0 +1,16 @@
+<div class="fullscreenpopup" onclick="window.location.href='{{exitpath}}';">
+   <div class="centerBox popupBox" onclick="StopEventPropagation(event);">
+        <form action = "/storage/upload" method = "POST" class="centerBox" enctype = "multipart/form-data">
+            <div class="centerBox">
+                <label for="upload" class="selectFileBtn">Select File</label>
+                <input type="file" name="file" id="upload" onchange="updatePreviewName(this)">
+            </div>
+            <div class="centerBox">
+                <h2 id="filename" style="color: white;">Selected File: None</h2>
+            </div>
+            <div class="centerBox">
+                <button type = "submit" class="defaultButton">Upload File</button>
+            </div>
+        </form>  
+    </div>
+</div>
