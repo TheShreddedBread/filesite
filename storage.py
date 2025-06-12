@@ -25,18 +25,18 @@ class Storage:
         if (session.get('lastStoragePath') != None):
             return session['lastStoragePath']
         return ""
-    
+
     def getCurrentPath(self):
         if (session.get('currentStoragePath') != None):
             return session['currentStoragePath']
         return ""
-    
+
     def getDefaultStoragePath(self):
         return "storage/home/"
 
     def getDefaultSharedStoragePath(self):
         return "storage/home/"
-    
+
     def validatePath(self, givenpath):
         startPath = self.getDefaultStoragePath()
         if(givenpath.count(startPath) > 1):
@@ -47,13 +47,13 @@ class Storage:
         if (len(folderpath) != 0):
             if (len(folderpath[0]) != 0):
                 return True
-            
+    
         sharedPath = self.getDefaultSharedStoragePath()
         if(givenpath.count(sharedPath) > 1):
             givenpath = givenpath[len(sharedPath):-1]
         if givenpath == "":
             return True
-        
+
         fileId = Modules.selectFromDB(f"SELECT id, uploadUserId FROM files WHERE filehash = '{givenpath}'")
         if (len(fileId) != 0):
             if (len(fileId[0]) != 0):
@@ -62,7 +62,7 @@ class Storage:
                     if (len(folderpath[0]) != 0):
                         return True
         return False
-    
+
     def getPathBack(self, givenpath):
         pathToHome = []
         currpath = givenpath
@@ -76,16 +76,19 @@ class Storage:
             currpath = folderpath[0][0]
             
         return (pathToHome)
-    
-    def getPathSharedBack(self, givenpath):
+
+    def getPathSharedBack(self, givenpath, targetPath = ""):
         pathToHome = []
         currpath = givenpath
-        while currpath != "":
+        while currpath != targetPath:
             fail = True
-            fileId = Modules.selectFromDB(f"SELECT id, uploadUserId FROM files WHERE filehash = '{currpath}' and share = '1' and folder = '1'")
+            fileId = Modules.selectFromDB(f"SELECT id, uploadUserId, share FROM files WHERE filehash = '{currpath}' and folder = '1'")
 
             if (len(fileId) != 0):
                 if (len(fileId[0]) != 0):
+                    if (fileId[0][2] == 0): # If share = 0
+                        currpath = targetPath
+                        break
                     sharedpath = Modules.selectFromDB(f"SELECT id FROM usershare WHERE reciver = '{self.acc.getUserId()}' AND sender = '{fileId[0][1]}' AND fileId = '{fileId[0][0]}'")
 
                     if (len(sharedpath) != 0):
@@ -139,17 +142,15 @@ class Storage:
         if (len(filesHTML) == 0):
             filesHTML = "<br><br><div style='color: white; border: 2px solid white; width: fit-content; padding: 2rem;'><h1>Start by uploading file</h1></div>"
         return filesHTML
-    
-
 
     def getSharedFilesForPath(self, path = "", shared = False):
         filesHTML = ""
         loadedSharedFiles = []
         clickpath = self.getLastPath()
-        # id INTEGER, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER
+        # id INTEGER, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER, sharePath TEXT
         foundFiles = Modules.selectFromDB(f"SELECT * FROM usershare WHERE reciver = {self.acc.getUserId()}")
         for file in foundFiles:
-            targetFile = Modules.selectFromDB(f"SELECT * FROM files WHERE id = '{file[3]}' AND uploadUserId = '{file[1]}' AND share = '1' AND path = '{path}'")
+            targetFile = Modules.selectFromDB(f"SELECT * FROM files WHERE id = '{file[3]}' AND uploadUserId = '{file[1]}' AND share = '1' AND sharePath = '{path}'")
             if (len(targetFile) != 1):
                 continue
             targetFile = targetFile[0]
@@ -244,7 +245,15 @@ class Storage:
                 val = request.form.getlist('sharestate')
                 if (len(val) != 0):
                     if (val[0] == "allowed"):
-                        Modules.executeIntoDB(f"UPDATE files SET share='1' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                        if path == "":
+                            Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                        else:
+                            sharedFolders = Modules.selectFromDB(f"SELECT id FROM files WHERE filehash = '{path}' AND uploadUserId = '{self.acc.getUserId()}' AND folder = '1' AND share = '1'")
+                            if (len(sharedFolders) == 1):
+                                print(path)
+                                Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='{path}' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'") # in shared folder
+                            else:
+                                Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'") # not in shared folder
                 else: 
                     Modules.executeIntoDB(f"UPDATE files SET share='0' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
             
@@ -325,7 +334,6 @@ class Storage:
         
         pathWay = self.getPathSharedBack(path)
         data['navHelp'] = render_template("smalltemplate/workpath.twig", paths=pathWay, share=True)
-        print(path)
         if (len(pathWay) <= 1):
             ahrefpath = "storage/shared"
         else:
@@ -355,7 +363,6 @@ class Storage:
                             userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0], fileToDownload[0]))
                             fileExt = self.splitFilename(fileToDownload[2])[1]
                             return send_from_directory(userFilesPath, (fileToDownload[1] + fileExt), as_attachment=True, download_name=(fileToDownload[2]))
-        print(ahrefpath)
         data['files'] = self.getSharedFilesForPath(path, shared=True)
         data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
         return render_template("storage/home.twig", data=data)
@@ -493,6 +500,7 @@ class Storage:
 # Visa filsökvägen till mappen, typ under sök [KLART]
 # Fixa så sök fungerar [KLART]
 # Begränsa så man inte kan överstiga upload limit [KLART]
-# Lägg till så man kan dela filer
+# Lägg till så man kan dela filer [KLART]
 # Återställa lösen osv, kontohantering [Delvis]
 # POPUP som typ "file upload success" och "Not enough space", använda sessions?
+# Skapa userfiles mapp om den ej finns
