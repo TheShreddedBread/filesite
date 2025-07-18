@@ -14,13 +14,6 @@ from werkzeug.datastructures import  FileStorage
 from werkzeug.middleware.proxy_fix import ProxyFix
 import sqlite3
 
-connection = sqlite3.connect("data/data.db")
-cursor = connection.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER, linkshare BOOLEAN, sharePath TEXT)")
-cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT, email TEXT, uniqueCode TEXT, uploadLimit INTEGER)")
-cursor.execute("CREATE TABLE IF NOT EXISTS usershare (id INTEGER PRIMARY KEY AUTOINCREMENT, sender INTEGER, reciver INTEGER, fileId INTEGER, folder BOOLEAN)")
-connection.close()
-
 # -- WEBSITE --
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -29,10 +22,17 @@ if not os.path.exists("data"):
 if not os.path.exists("data/userfiles"):
     os.makedirs("data/userfiles")
 
+connection = sqlite3.connect("data/data.db")
+cursor = connection.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER, linkshare BOOLEAN, sharePath TEXT)")
+cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT, email TEXT, uniqueCode TEXT, uploadLimit INTEGER)")
+cursor.execute("CREATE TABLE IF NOT EXISTS usershare (id INTEGER PRIMARY KEY AUTOINCREMENT, sender INTEGER, reciver INTEGER, fileId INTEGER, folder BOOLEAN)")
+connection.close()
+
 if not os.path.exists("hash.env"):
     with open("hash.env", "w") as f:
-        stamp1 = random.choice(time.monotonic_ns().split())
-        stamp2 = random.choice(time.monotonic_ns().split())
+        stamp1 = random.choice(str(time.monotonic_ns()).split())
+        stamp2 = random.choice(str(time.monotonic_ns()).split())
         f.write(f"SECRET_KEY={Modules.getUniqueCode(str(stamp1))}{Modules.getUniqueCode(str(stamp2))}\n")
 
 if os.path.exists("hash.env"):
