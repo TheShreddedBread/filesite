@@ -1,0 +1,46 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for('static', filename=userTheme + '/css/style.css')}}">
+        <title>FileShare</title>
+    </head>
+    <body onclick="closeAllFileOptionMenu(this); StopEventPropagation(event);">
+        <noscript><h1>PLEASE ENABLE JAVASCRIPT OR SITE MIGHT NOT WORK CORRECTLY</h1></noscript>
+        {{ data['popupHTML'] }}
+        <div class="leftSidebar">
+            {{ data['navbarHTML'] }}
+        </div>
+        <div class="storageContent" onclick="closeAllFileOptionMenu(this); StopEventPropagation(event);">
+            <div class="userInfoBox" onclick="StopEventPropagation(event);">
+                <h5>Personal Information</h5>
+                <br>
+                <p>Username: {{name}} </p><br>
+                <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
+                    <input name="askforupdate" value="updateemail" hidden>
+                    <p>Email: {{email}} <button><span class="material-symbols-outlined">edit</span></button></p>
+                </form><br>
+                <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
+                    <input name="askforupdate" value="updatepsw" hidden>
+                    <p>Password: ***** <button><span class="material-symbols-outlined">edit</span></button></p>
+                </form><br>
+                <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
+                    <input name="askforupdate" value="updatetheme" hidden>
+                    <p>                    
+                    Theme: <select name="theme" id="theme">
+                        {% for theme in themes %}
+                            {% if theme['path'] == curTheme %}
+                                <option value="{{loop.index0}}" selected>{{theme['name']}}</option>
+                            {% else %}
+                                <option value="{{loop.index0}}">{{theme['name']}}</option>  
+                            {% endif %}
+                        {% endfor %}
+                    </select>&nbsp;<button><span class="material-symbols-outlined">refresh</span></button></p>
+                </form>
+            </div>
+        </div>
+
+        <script src="{{url_for('static', filename=userTheme + '/js/script.js')}}"></script>
+    </body>
+</html>

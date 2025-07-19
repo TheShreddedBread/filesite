@@ -1,0 +1,12 @@
+<div class="fullscreenpopup" onclick="window.location.href='/storage/home{{exitpath}}'; StopEventPropagation(this);">
+    <div class="centerBox popupBox" onclick="StopEventPropagation(event);">
+        <h3>Create Folder:</h3>
+        <br>
+        <form action="./makefolder" method="POST" onclick="StopEventPropagation(this);">
+            
+            <input class="textInputWide" type="text" placeholder="Folder Name" name="foldername" autocomplete="off"/> 
+            <br><br>
+            <input class="defaultButton" type="submit" value="Create Folder!"/>
+        </form>
+    </div>
+</div>

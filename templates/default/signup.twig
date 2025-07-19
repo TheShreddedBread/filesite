@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename=userTheme + '/css/style.css')}}">
+    <title>FileShare</title>
+</head>
+<body>
+    <br>
+    <br>
+    <br>
+    <div class="centerItem">
+        <div class="centerItem formBox">
+            <h3>Signup</h3>
+            <form method="POST">
+                <label for="username">Username:</label>
+                <br>
+                <input name="username" type="text"></input>
+                <br><br>
+                <label for="email">Email:</label>
+                <br>
+                <input name="email" type="email"></input>
+                <br><br>
+                <label for="password">Password:</label>
+                <br>
+                <input name="password" type="password"></input>
+                <br><br>
+                <button class="defaultButton">Signup</button>
+                {% if data['toggle'] %}
+                    <br><br>
+                    {{data['error']}}
+                {% endif %}
+            </form>
+            <br><br>
+            <span>Already have an account?</span><br>
+            <a style="color: var(--fgColor)" href="/login">Login</a>
+        </div> 
+    </div>
+    <script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+    </script>
+</body>
+</html>

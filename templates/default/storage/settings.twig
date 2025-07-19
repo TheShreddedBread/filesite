@@ -3,7 +3,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename=userTheme + '/css/style.css')}}">
         <title>FileShare</title>
     </head>
     <body onclick="closeAllFileOptionMenu(this); StopEventPropagation(event);">
@@ -41,17 +41,26 @@
                         <p>Username: {{name}} </p><br>
                         <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
                             <input name="askforupdate" value="updateemail" hidden>
-                            <p>Email: {{email}} <button><span class="material-symbols-outlined">edit</span></p></button>
+                            <p>Email: {{email}} <button><span class="material-symbols-outlined">edit</span></button></p>
                         </form><br>
                         <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
                             <input name="askforupdate" value="updatepsw" hidden>
-                            <p>Password: ***** <button><span class="material-symbols-outlined">edit</span></button>
-                        </form></p>
+                            <p>Password: ***** <button><span class="material-symbols-outlined">edit</span></button></p>
+                        </form><br>
+                        <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
+                            <input name="askforupdate" value="updatetheme" hidden>
+                            <p>                    
+                            Theme: <select name="theme" id="theme">
+                                {% for theme in themes %}
+                                    <option value="{{loop.index0}}">{{theme['name']}}</option>
+                                {% endfor %}
+                            </select>&nbsp;<button><span class="material-symbols-outlined">refresh</span></button></p>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script src="{{url_for('static', filename='js/script.js')}}"></script>
+        <script src="{{url_for('static', filename=userTheme + '/js/script.js')}}"></script>
     </body>
 </html>

@@ -1,0 +1,12 @@
+{
+  "themes": [
+    {
+      "name": "Default",
+      "path": "default"
+    },
+    {
+      "name": "Legacy",
+      "path": "legacy"
+    }
+  ]
+}

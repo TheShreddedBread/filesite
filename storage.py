@@ -3,6 +3,7 @@ import hashlib
 import os
 import sqlite3
 import time
+from theme import Theme
 from modules import Modules
 import math
 from flask import Flask, render_template, request, redirect, send_from_directory, url_for, session
@@ -11,6 +12,7 @@ class Storage:
     def __init__(self, app, acc):
         self.acc = acc
         self.app = app
+        self.theme = Theme(self.app)
 
     def convert_size(self, size_bytes):
         if size_bytes == 0:
@@ -114,7 +116,7 @@ class Storage:
     
     def getDataDefault(self):
         data = {}
-        data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), path=self.getLastPath(), fileusedtext=self.getFileUsedText())
+        data['navbarHTML'] = self.theme.loadFileWithTheme("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), path=self.getLastPath(), fileusedtext=self.getFileUsedText())
         data['popupHTML'] = ""
         data['files'] = ""
         return data
@@ -122,7 +124,7 @@ class Storage:
     def getFileUsedText(self):
         spaceText = self.convert_size(self.acc.getUserCurrentStorage()) + " / " + self.convert_size(self.acc.getUserMaxStorage()*1048576)
         progress = self.acc.getUserCurrentStorage()/(self.acc.getUserMaxStorage()*1048576)
-        return render_template("smalltemplate/progressbar.twig", text=spaceText, progress=math.ceil(progress*100))
+        return self.theme.loadFileWithTheme("smalltemplate/progressbar.twig", text=spaceText, progress=math.ceil(progress*100))
 
     def splitFilename(self, filename):
         name, ext = os.path.splitext(filename)
@@ -143,7 +145,7 @@ class Storage:
             if file[6] == 1:
                 clickpath = file[3]
 
-            filesHTML += render_template("smalltemplate/storageSquares.twig", data={"id":file[0], "folder": file[6], "name": file[2], "fancyname": fancyname, "size": self.convert_size(file[7]), "path": clickpath})
+            filesHTML += self.theme.loadFileWithTheme("smalltemplate/storageSquares.twig", data={"id":file[0], "folder": file[6], "name": file[2], "fancyname": fancyname, "size": self.convert_size(file[7]), "path": clickpath})
         if (len(filesHTML) == 0):
             filesHTML = "<br><br><div style='color: var(--fgColor); border: 2px solid var(--fgColor); width: fit-content; padding: 2rem; margin: 2rem;'><h1>Start by uploading file</h1></div>"
         return filesHTML
@@ -166,7 +168,7 @@ class Storage:
             if targetFile[6] == 1:
                 clickpath = targetFile[3]
             loadedSharedFiles.append(file[3])
-            filesHTML += render_template("smalltemplate/storageSquares.twig", data={"id":targetFile[0], "folder": targetFile[6], "name": targetFile[2], "fancyname": fancyname, "size": self.convert_size(targetFile[7]), "path": clickpath, "shared": shared})
+            filesHTML += self.theme.loadFileWithTheme("smalltemplate/storageSquares.twig", data={"id":targetFile[0], "folder": targetFile[6], "name": targetFile[2], "fancyname": fancyname, "size": self.convert_size(targetFile[7]), "path": clickpath, "shared": shared})
         session['loadedSharedFiles'] = loadedSharedFiles
         if (len(filesHTML) == 0):
             filesHTML = "<br><br><div style='color: var(--fgColor); border: 2px solid var(--fgColor); width: fit-content; padding: 2rem; margin: 2rem;'><h1>You have no files shared with you</h1></div>"
@@ -196,7 +198,7 @@ class Storage:
         session['lastStoragePath'] = path
         
         pathWay = self.getPathBack(path)
-        data['navHelp'] = render_template("smalltemplate/workpath.twig", paths=pathWay)
+        data['navHelp'] = self.theme.loadFileWithTheme("smalltemplate/workpath.twig", paths=pathWay)
 
         if (len(pathWay) <= 1):
             ahrefpath = "storage/home"
@@ -227,7 +229,7 @@ class Storage:
                     itemText = "The file"
                     if str(userFiles[0][2]) == "1":
                         itemText = "The folder"
-                    data['popupHTML'] = render_template("popup/confirmdelete.twig", backpath=currPath, fileDeleteHash=fileDelHash, filename=userFiles[0][1], itemType=itemText)
+                    data['popupHTML'] = self.theme.loadFileWithTheme("popup/confirmdelete.twig", backpath=currPath, fileDeleteHash=fileDelHash, filename=userFiles[0][1], itemType=itemText)
             elif request.form['type'] == "sharemenu":
                 fileId = request.form['id']
                 files = Modules.selectFromDB(f"SELECT share, name FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
@@ -246,7 +248,7 @@ class Storage:
                             if (len(userInfo) == 1):
                                 if (userInfo[0][0] != self.acc.getUserId() and users[0][0] == userInfo[0][0]):
                                     usersData.append([userInfo[0][0], userInfo[0][1], userInfo[0][2]])
-                    data['popupHTML'] = render_template("popup/sharemenu.twig", backpath=currPath, checked=(shareFile[0]==1), filename=shareFile[1], users=usersData)
+                    data['popupHTML'] = self.theme.loadFileWithTheme("popup/sharemenu.twig", backpath=currPath, checked=(shareFile[0]==1), filename=shareFile[1], users=usersData)
             
             elif request.form['type'] == "toggleshare":
                 fileId = session['sharetargetId']
@@ -330,8 +332,8 @@ class Storage:
                         session['deleteFileId'] = None
                     
         data['files'] = self.getFilesForPath(path)
-        data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
-        return render_template("storage/home.twig", data=data)
+        data['navbarHTML'] = self.theme.loadFileWithTheme("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
+        return self.theme.loadFileWithTheme("storage/home.twig", data=data)
     
 
     def storageSharedPage(self, path=""):
@@ -343,7 +345,7 @@ class Storage:
         session['lastStoragePath'] = path
         
         pathWay = self.getPathSharedBack(path)
-        data['navHelp'] = render_template("smalltemplate/workpath.twig", paths=pathWay, share=True)
+        data['navHelp'] = self.theme.loadFileWithTheme("smalltemplate/workpath.twig", paths=pathWay, share=True)
         if (len(pathWay) <= 1):
             ahrefpath = "storage/shared"
         else:
@@ -378,8 +380,8 @@ class Storage:
                             print("2" + fileToDownload[1] + fileExt)
                             return send_from_directory(userFilesPath, (fileToDownload[1] + fileExt), as_attachment=True, download_name=(fileToDownload[2]))
         data['files'] = self.getSharedFilesForPath(path, shared=True)
-        data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
-        return render_template("storage/home.twig", data=data)
+        data['navbarHTML'] = self.theme.loadFileWithTheme("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
+        return self.theme.loadFileWithTheme("storage/home.twig", data=data)
     
 
     def storageUploadPage(self):
@@ -389,14 +391,15 @@ class Storage:
         if(not self.acc.userIsLoggedIn()):
             return redirect("/")
         data = {}
+        data = self.getDataDefault()
         last = self.getLastPath()
-        data['navHelp'] = render_template("smalltemplate/workpath.twig", paths=self.getPathBack(last))
+        data['navHelp'] = self.theme.loadFileWithTheme("smalltemplate/workpath.twig", paths=self.getPathBack(last))
         data['files'] = self.getFilesForPath(last)
         if (last == ""):
-            data['popupHTML'] = render_template("popup/uploadfile.twig", exitpath = "/storage/home")
+            data['popupHTML'] = self.theme.loadFileWithTheme("popup/uploadfile.twig", exitpath = "/storage/home")
         else:
-            data['popupHTML'] = render_template("popup/uploadfile.twig", exitpath = ("/storage/home/" + last))
-        data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=(last==""), path=last, fileusedtext=self.getFileUsedText())
+            data['popupHTML'] = self.theme.loadFileWithTheme("popup/uploadfile.twig", exitpath = ("/storage/home/" + last))
+        data['navbarHTML'] = self.theme.loadFileWithTheme("smalltemplate/navbar.twig", firstpage=(last==""), path=last, fileusedtext=self.getFileUsedText())
 
         if request.method == 'POST':   
             storagepath = last
@@ -425,7 +428,7 @@ class Storage:
             else:
                 return redirect("/storage/upload")
         else:
-            return render_template("storage/home.twig", data=data)
+            return self.theme.loadFileWithTheme("storage/home.twig", data=data)
     
 
     def storageDownloadFile(self, fileId, uploderId =-1):
@@ -445,14 +448,14 @@ class Storage:
             return redirect("/")
         
         data = self.getDataDefault()
-        data['navHelp'] = render_template("smalltemplate/workpath.twig", paths=self.getPathBack(self.getLastPath()))
+        data['navHelp'] = self.theme.loadFileWithTheme("smalltemplate/workpath.twig", paths=self.getPathBack(self.getLastPath()))
         data['files'] = self.getFilesForPath(self.getLastPath())
 
         goBackPath = self.getLastPath()
         if (len(goBackPath) != 0):
             goBackPath = "/"  + goBackPath
             
-        data['popupHTML'] = render_template("popup/createfolder.twig", exitpath = goBackPath)
+        data['popupHTML'] = self.theme.loadFileWithTheme("popup/createfolder.twig", exitpath = goBackPath)
         if request.method == 'POST' and request.form['foldername'] != None:   
             if (len(request.form['foldername']) != 0):
                 foldername = request.form['foldername']
@@ -467,7 +470,7 @@ class Storage:
                 else:
                     return redirect("home/" + storagepath)
         
-        return render_template("storage/home.twig", data=data)
+        return self.theme.loadFileWithTheme("storage/home.twig", data=data)
     
 
     def storageUserSettingsPage(self):
@@ -475,14 +478,23 @@ class Storage:
         if (len(res) != 1):
             return redirect("logout")
         data = self.getDataDefault()
-        data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=True, path=self.getLastPath(), fileusedtext=self.getFileUsedText())
+        allThemes = self.theme.getThemes()
+        data['navbarHTML'] = self.theme.loadFileWithTheme("smalltemplate/navbar.twig", firstpage=True, path=self.getLastPath(), fileusedtext=self.getFileUsedText())
         if request.method == 'POST' and 'askforupdate' in request.form:
-            updateitem = "email"
-            text = "New email: "
-            if request.form['askforupdate'] == "updatepsw":
-                updateitem = "password"
-                text = "New password: "
-            data['popupHTML'] = render_template("popup/askforupdate.twig", type=updateitem, text=text, backpath="storage/settings")
+            if request.form['askforupdate'] == "updatetheme":
+                try:
+                    int(request.form['theme'])
+                except:
+                    return redirect('settings')
+                self.theme.setUserTheme(allThemes[int(request.form['theme'])]['path'])
+                return redirect('settings')
+            else:
+                updateitem = "email"
+                text = "New email: "
+                if request.form['askforupdate'] == "updatepsw":
+                    updateitem = "password"
+                    text = "New password: "
+                data['popupHTML'] = self.theme.loadFileWithTheme("popup/askforupdate.twig", type=updateitem, text=text, backpath="storage/settings")
         elif request.method == "POST" and 'confpsw' in request.form:
             res2 = Modules.selectFromDB(f"SELECT password, email FROM users WHERE id='{self.acc.getUserId()}'")
             hashpsw = Modules.hashPass(request.form['confpsw'])
@@ -496,19 +508,20 @@ class Storage:
                     newPsw = Modules.hashPass(request.form['newInfo'])
                     self.acc.updatePassword(newPsw, res2[0][1], res2[0][0])
                     return redirect("settings")
-        return render_template("storage/settings.twig", name=res[0][0], email=res[0][1], data=data)
-    
+                
+        return self.theme.loadFileWithTheme("storage/settings.twig", themes=allThemes, curTheme = self.theme.getUserTheme(), name=res[0][0], email=res[0][1], data=data)
+
     def storageOpenShareMenu(self):
         data = self.getDataDefault()
-        data['navHelp'] = render_template("smalltemplate/workpath.twig", firstpage=True, paths=self.getPathBack(self.getLastPath()))
+        data['navHelp'] = self.theme.loadFileWithTheme("smalltemplate/workpath.twig", firstpage=True, paths=self.getPathBack(self.getLastPath()))
         data['files'] = self.getFilesForPath(self.getLastPath())
         goBackPath = self.getLastPath()
 
         if (len(goBackPath) != 0):
             goBackPath = "/"  + goBackPath
             
-        data['popupHTML'] = render_template("popup/foldername.twig", exitpath = goBackPath)
-        return render_template("storage/home.twig", data=data)
+        data['popupHTML'] = self.theme.loadFileWithTheme("popup/foldername.twig",theme=self.theme.getUserTheme(), exitpath = goBackPath)
+        return self.theme.loadFileWithTheme("storage/home.twig", data=data)
 # TODO 
 # Visa användt utrymme i navbar [KLART]
 # Visa filsökvägen till mappen, typ under sök [KLART]
@@ -516,6 +529,7 @@ class Storage:
 # Begränsa så man inte kan överstiga upload limit [KLART]
 # Lägg till så man kan dela filer [KLART]
 # Skapa userfiles mapp om den ej finns [KLART]
+# Lägg till teman [KLART]
 # Återställa lösen osv, kontohantering [Delvis]
 # Lägg till så att mappar delas korrekt
 # POPUP som typ "file upload success" och "Not enough space", använda sessions?

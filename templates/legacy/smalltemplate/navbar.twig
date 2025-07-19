@@ -1,0 +1,14 @@
+<div class="centerBox">
+    <ul>
+        {% if not firstpage %}
+        <li class="menuitem"><a href="/{{backpath}}"><span class="material-symbols-outlined">arrow_back</span>Go back</a></li>
+        {% endif %}
+        <li class="menuitem"><a href="/storage/home"><span class="material-symbols-outlined">home</span>Home</a></li>
+        <li class="menuitem"><a href="/storage/upload"><span class="material-symbols-outlined">upload</span>Upload</a></li>
+        <li class="menuitem"><a href="/storage/makefolder"><span class="material-symbols-outlined">folder</span>Create Folder</a></li>
+        <li class="menuitem"><a href="/storage/shared"><span class="material-symbols-outlined">share</span>Shared with me</a></li>
+        <li class="menuitem"><a href="/storage/settings"><span class="material-symbols-outlined">manage_accounts</span>Settings</a></li>
+        <li class="menuitem"><a href="/logout"><span class="material-symbols-outlined">logout</span>Logout</a></li>
+        {{fileusedtext}}
+    </ul>
+</div>

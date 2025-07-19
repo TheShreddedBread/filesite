@@ -1,0 +1,17 @@
+<div class="fullscreenpopup" onclick="window.location.href='/{{backpath}}'; StopEventPropagation(this);">
+    <div class="centerBox" onclick="StopEventPropagation(this);">
+        <div class="askupdatebox">
+            <h1>Please confirm the change</h1>
+            <div class="centerBox" onclick="StopEventPropagation(this);">
+                <form method="POST">
+                {{ text }}<br><input class="textInputWide textInputWider" name="newInfo" type="{{type}}" autocomplete="off" />
+                <input name="type" value="{{type}}" hidden />
+                <br><br>
+                Confirm your current password:<br><input class="textInputWide textInputWider" name="confpsw" type="password" />
+                <br><br><br>
+                <button class="confirmUpdate">Confirm update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
