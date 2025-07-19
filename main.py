@@ -26,7 +26,7 @@ connection = sqlite3.connect("data/data.db")
 cursor = connection.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER, linkshare BOOLEAN, sharePath TEXT)")
 cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT, email TEXT, uniqueCode TEXT, uploadLimit INTEGER)")
-cursor.execute("CREATE TABLE IF NOT EXISTS usershare (id INTEGER PRIMARY KEY AUTOINCREMENT, sender INTEGER, reciver INTEGER, fileId INTEGER, folder BOOLEAN)")
+cursor.execute("CREATE TABLE IF NOT EXISTS usershare (id INTEGER PRIMARY KEY AUTOINCREMENT, sender INTEGER, reciver INTEGER, fileId INTEGER, folder BOOLEAN, filehash TEXT)")
 connection.close()
 
 if not os.path.exists("hash.env"):

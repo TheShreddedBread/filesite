@@ -1,4 +1,4 @@
-<div class="centerBox">
+<div class="centerItems">
     <ul>
         {% if not firstpage %}
         <li class="menuitem"><a href="/{{backpath}}"><span class="material-symbols-outlined">arrow_back</span>Go back</a></li>
@@ -9,6 +9,8 @@
         <li class="menuitem"><a href="/storage/shared"><span class="material-symbols-outlined">share</span>Shared with me</a></li>
         <li class="menuitem"><a href="/storage/settings"><span class="material-symbols-outlined">manage_accounts</span>Settings</a></li>
         <li class="menuitem"><a href="/logout"><span class="material-symbols-outlined">logout</span>Logout</a></li>
-        {{fileusedtext}}
     </ul>
+    <div class="navInfoText">
+        {{fileusedtext}}
+    </div>
 </div>

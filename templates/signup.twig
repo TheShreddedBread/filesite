@@ -8,8 +8,11 @@
     <title>FileShare</title>
 </head>
 <body>
-    <div class="centerBox">
-        <div class="centerBox formBox">
+    <br>
+    <br>
+    <br>
+    <div class="centerItem">
+        <div class="centerItem formBox">
             <h3>Signup</h3>
             <form method="POST">
                 <label for="username">Username:</label>
@@ -24,7 +27,7 @@
                 <br>
                 <input name="password" type="password"></input>
                 <br><br>
-                <button class="defaultButton">Login</button>
+                <button class="defaultButton">Signup</button>
                 {% if data['toggle'] %}
                     <br><br>
                     {{data['error']}}
@@ -32,7 +35,7 @@
             </form>
             <br><br>
             <span>Already have an account?</span><br>
-            <a style="color: white" href="/login">Login</a>
+            <a style="color: var(--fgColor)" href="/login">Login</a>
         </div> 
     </div>
     <script>

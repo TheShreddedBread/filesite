@@ -35,7 +35,7 @@ class Storage:
         return "storage/home/"
 
     def getDefaultSharedStoragePath(self):
-        return "storage/home/"
+        return "storage/shared/"
 
     def validatePath(self, givenpath):
         startPath = self.getDefaultStoragePath()
@@ -47,20 +47,25 @@ class Storage:
         if (len(folderpath) != 0):
             if (len(folderpath[0]) != 0):
                 return True
-    
+            
         sharedPath = self.getDefaultSharedStoragePath()
         if(givenpath.count(sharedPath) > 1):
             givenpath = givenpath[len(sharedPath):-1]
         if givenpath == "":
             return True
 
-        fileId = Modules.selectFromDB(f"SELECT id, uploadUserId FROM files WHERE filehash = '{givenpath}'")
+        # Mycket förkortad? KOLLA IGEN!
+        # fileId = Modules.selectFromDB(f"SELECT id, uploadUserId FROM files WHERE filehash = '{givenpath}'")
+        # if (len(fileId) != 0):
+        #     if (len(fileId[0]) != 0):
+        #         folderpath = Modules.selectFromDB(f"SELECT id FROM usershare WHERE reciver = '{self.acc.getUserId()}' AND sender = '{fileId[0][0]}' AND fileId = '{fileId[0][1]}'")
+        #         if (len(folderpath) != 0):
+        #             if (len(folderpath[0]) != 0):
+        #                 return True
+        fileId = Modules.selectFromDB(f"SELECT id FROM usershare WHERE filehash = '{givenpath}' and reciver = '{self.acc.getUserId()}'")
         if (len(fileId) != 0):
             if (len(fileId[0]) != 0):
-                folderpath = Modules.selectFromDB(f"SELECT id FROM usershare WHERE reciver = '{self.acc.getUserId()}' AND sender = '{fileId[0][1]}' AND fileId = '{fileId[0][1]}'")
-                if (len(folderpath) != 0):
-                    if (len(folderpath[0]) != 0):
-                        return True
+                return True
         return False
 
     def getPathBack(self, givenpath):
@@ -140,7 +145,7 @@ class Storage:
 
             filesHTML += render_template("smalltemplate/storageSquares.twig", data={"id":file[0], "folder": file[6], "name": file[2], "fancyname": fancyname, "size": self.convert_size(file[7]), "path": clickpath})
         if (len(filesHTML) == 0):
-            filesHTML = "<br><br><div style='color: white; border: 2px solid white; width: fit-content; padding: 2rem;'><h1>Start by uploading file</h1></div>"
+            filesHTML = "<br><br><div style='color: var(--fgColor); border: 2px solid var(--fgColor); width: fit-content; padding: 2rem; margin: 2rem;'><h1>Start by uploading file</h1></div>"
         return filesHTML
 
     def getSharedFilesForPath(self, path = "", shared = False):
@@ -164,7 +169,7 @@ class Storage:
             filesHTML += render_template("smalltemplate/storageSquares.twig", data={"id":targetFile[0], "folder": targetFile[6], "name": targetFile[2], "fancyname": fancyname, "size": self.convert_size(targetFile[7]), "path": clickpath, "shared": shared})
         session['loadedSharedFiles'] = loadedSharedFiles
         if (len(filesHTML) == 0):
-            filesHTML = "<br><br><div style='color: white; border: 2px solid white; width: fit-content; padding: 2rem;'><h1>You have no files shared with you</h1></div>"
+            filesHTML = "<br><br><div style='color: var(--fgColor); border: 2px solid var(--fgColor); width: fit-content; padding: 2rem; margin: 2rem;'><h1>You have no files shared with you</h1></div>"
         return filesHTML
 
     def generateNavHelp(self, path):
@@ -211,7 +216,7 @@ class Storage:
 
             elif request.form['type'] == "askfordelete":
                 fileId = request.form['id'] 
-                userFiles = Modules.selectFromDB(f"SELECT id, name FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                userFiles = Modules.selectFromDB(f"SELECT id, name, folder FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
                 if (len(userFiles) >= 1):
                     fileDelHash = Modules.md5Hash(str(userFiles[0][0] * self.acc.getUserId()))
                     session['deleteFileHash'] = fileDelHash
@@ -219,7 +224,10 @@ class Storage:
                     currPath = "storage/home"
                     if (len(path) != 0):
                         currPath += ("/" + path) 
-                    data['popupHTML'] = render_template("popup/confirmdelete.twig", backpath=currPath, fileDeleteHash=fileDelHash, filename=userFiles[0][1])
+                    itemText = "The file"
+                    if str(userFiles[0][2]) == "1":
+                        itemText = "The folder"
+                    data['popupHTML'] = render_template("popup/confirmdelete.twig", backpath=currPath, fileDeleteHash=fileDelHash, filename=userFiles[0][1], itemType=itemText)
             elif request.form['type'] == "sharemenu":
                 fileId = request.form['id']
                 files = Modules.selectFromDB(f"SELECT share, name FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
@@ -269,7 +277,7 @@ class Storage:
             elif request.form['type'] == "updateusers":
                 fileId = session['sharetargetId']
                 newMailList = request.form.getlist('addedmail')
-                targetFile = Modules.selectFromDB(f"SELECT id, folder FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}' AND share = '1'")
+                targetFile = Modules.selectFromDB(f"SELECT id, folder, filehash FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}' AND share = '1'")
                 if len(targetFile) == 1:
                     allToBeAdded = []
                     for mail in newMailList:
@@ -282,7 +290,7 @@ class Storage:
                             if (result[0][0] != self.acc.getUserId()):
                                 allToBeAdded.append(result[0][0])
                                 if (len(Modules.selectFromDB(f"SELECT id FROM usershare WHERE sender = '{self.acc.getUserId()}' AND reciver = '{result[0][0]}' AND fileId = '{targetFile[0][0]}'")) == 0):
-                                    Modules.executeIntoDB(f"INSERT INTO usershare (sender, reciver, fileId, folder) VALUES ('{self.acc.getUserId()}', '{result[0][0]}', '{targetFile[0][0]}', '{targetFile[0][1]}')")
+                                    Modules.executeIntoDB(f"INSERT INTO usershare (sender, reciver, fileId, folder, filehash) VALUES ('{self.acc.getUserId()}', '{result[0][0]}', '{targetFile[0][0]}', '{targetFile[0][1]}', '{targetFile[0][2]}')")
 
                     currentShared = Modules.selectFromDB(f"SELECT reciver FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{targetFile[0][0]}'")
                     if len(currentShared) >= 1:
@@ -297,6 +305,7 @@ class Storage:
                     if len(fileData) == 1:
                         if (fileData[0][4] == 0):
                             Modules.executeIntoDB(f"DELETE FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{fileData[0][0]}' AND filehash = '{fileData[0][2]}'")
+                            Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{fileData[0][0]}' AND filehash = '{fileData[0][2]}'")
                             filePath = f"data/userfiles/{self.acc.getUserUniqueCode()}/{fileData[0][2]}{self.splitFilename(fileData[0][1])[1]}"
                             if (os.path.exists(filePath)):
                                 os.remove(filePath)
@@ -310,6 +319,7 @@ class Storage:
                             for uFile in allUserFiles:
                                 if (uFile[1].startswith(targetedPath) or uFile[1] == targetedPath[0:-1] or uFile[4] == fileData[0][2]):
                                     Modules.executeIntoDB(f"DELETE FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{uFile[0]}'")
+                                    Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{uFile[0]}'")
                                     filePath = f"data/userfiles/{self.acc.getUserUniqueCode()}/{uFile[4]}{self.splitFilename(uFile[3])[1]}"
                                     print(filePath)
                                     if (os.path.exists(filePath) and uFile[2] == 0):
@@ -360,8 +370,12 @@ class Storage:
                             fileToDownload = files[0]
                             instantPath = self.app.instance_path
                             folderPath = "\\".join(instantPath.split("\\")[0:-1])
-                            userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0], fileToDownload[0]))
+                            # Varför sluta detta fungera helt plötsliga KOLLA IGEN!
+                            # userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0], fileToDownload[0]))
+                            userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0]))
                             fileExt = self.splitFilename(fileToDownload[2])[1]
+                            print("1" + userFilesPath)
+                            print("2" + fileToDownload[1] + fileExt)
                             return send_from_directory(userFilesPath, (fileToDownload[1] + fileExt), as_attachment=True, download_name=(fileToDownload[2]))
         data['files'] = self.getSharedFilesForPath(path, shared=True)
         data['navbarHTML'] = render_template("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
@@ -438,7 +452,7 @@ class Storage:
         if (len(goBackPath) != 0):
             goBackPath = "/"  + goBackPath
             
-        data['popupHTML'] = render_template("popup/foldername.twig", exitpath = goBackPath)
+        data['popupHTML'] = render_template("popup/createfolder.twig", exitpath = goBackPath)
         if request.method == 'POST' and request.form['foldername'] != None:   
             if (len(request.form['foldername']) != 0):
                 foldername = request.form['foldername']
@@ -501,6 +515,8 @@ class Storage:
 # Fixa så sök fungerar [KLART]
 # Begränsa så man inte kan överstiga upload limit [KLART]
 # Lägg till så man kan dela filer [KLART]
+# Skapa userfiles mapp om den ej finns [KLART]
 # Återställa lösen osv, kontohantering [Delvis]
+# Lägg till så att mappar delas korrekt
 # POPUP som typ "file upload success" och "Not enough space", använda sessions?
-# Skapa userfiles mapp om den ej finns
+# Säkra upp för sql-injections, felaktiga inputs och dylikt

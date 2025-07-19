@@ -1,8 +1,9 @@
 <div class="fullscreenpopup" onclick="window.location.href='/{{backpath}}'; StopEventPropagation(this);">
-    <div class="centerBox" onclick="StopEventPropagation(this);">
+    <div class="centerItem" onclick="StopEventPropagation(this);">
         <div class="askupdatebox">
-            <h1>Please confirm the change</h1>
-            <div class="centerBox" onclick="StopEventPropagation(this);">
+            <h1>Please enter the new information</h1>
+            <br>
+            <div class="centerItem" onclick="StopEventPropagation(this);">
                 <form method="POST">
                 {{ text }}<br><input class="textInputWide textInputWider" name="newInfo" type="{{type}}" autocomplete="off" />
                 <input name="type" value="{{type}}" hidden />

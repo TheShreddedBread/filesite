@@ -1,5 +1,5 @@
 <div class="fullscreenpopup" onclick="window.location.href='/{{backpath}}'; StopEventPropagation(this);">
-    <div class="centerBox popupBox" onclick="StopEventPropagation(event);">
+    <div class="centerItem popupBox" onclick="StopEventPropagation(event);">
         <h3>Share settings for:</h3>
         <h3>{{filename}}</h3>
         <br><br>
@@ -16,7 +16,7 @@
         <div style="display: flex;">
             <form id="mailInput" onclick="StopEventPropagation(this);">
                 <label for="usermail">Add user</label>
-                <input type="email" name="usermail" id="newusermail" class="textInputWide" placeholder="User's mail"/> 
+                <input type="email" name="usermail" id="newusermail" class="textInputWide textInputColor" placeholder="User's mail"/> 
             </form>
             <button style="margin-left: 15px" onclick="addUser(this)" class="defaultButton"><span class="material-symbols-outlined"> person_add </span>Add</button>   
         </div>
@@ -32,7 +32,7 @@
             </div>
             {% endfor %}
         </form>
-        <button onclick="document.getElementById('maillist').submit()">Update access</button>
+        <button onclick="document.getElementById('maillist').submit()" class="confirmUpdate">Update access</button>
         {% endif %}
     </div>
 </div>

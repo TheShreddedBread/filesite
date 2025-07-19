@@ -8,13 +8,16 @@
     <title>FileShare</title>
 </head>
 <body>
-    <div class="centerBox">
-        <div class="centerBox formBox">
+    <br>
+    <br>
+    <br>
+    <div class="centerItem">
+        <div class="centerItem formBox">
             <h3>Login</h3>
             <form method="POST">
                 <label for="username">Username:</label>
                 <br>
-                <input name="username" type="text"></input>
+                <input name="username" class="textInputColor" type="text"></input>
                 <br><br>
                 {# <label for="email">Email:</label>
                 <br>
@@ -22,7 +25,7 @@
                 <br><br> #}
                 <label for="password">Password:</label>
                 <br>
-                <input name="password" type="password"></input>
+                <input name="password" class="textInputColor" type="password"></input>
                 <br><br>
                 <button class="defaultButton">Login</button>
                 {% if data['toggle'] %}
@@ -32,7 +35,7 @@
             </form>
             <br><br>
             <span>Don't have an account?</span><br>
-            <a style="color: white" href="/signup">Signup now</a>
+            <a style="color: var(--fgColor);" href="/signup">Signup now</a>
         </div> 
     </div>
     <script>

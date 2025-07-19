@@ -1,11 +1,6 @@
 @font-face {
-    font-family: "Bodo_Amat-otf";
-    src: url("fonts/Bodo Amat.otf");
-}
-
-@font-face {
-    font-family: "Bodo_Amat-ttf";
-    src: url("fonts/Bodo Amat.ttf");
+    font-family: "CoolVetica-otf";
+    src: url("fonts/Coolvetica Rg.otf");
 }
 
 @font-face {
@@ -14,34 +9,52 @@
     src: url("fonts/googleicons.ttf") format('woff');
   }
 
+:root {
+    --bgColor: rgb(250, 250, 250);
+    --fgColor: rgb(53, 53, 53);
+    --secBgColor: #b8b8b8;
+    --thirdBgColor: #818181;
+
+    --navItemBgColor: #2090db;
+    --secNavItemFgColor: black;
+    --secNavItemBgColor: #206bdb;
+
+    --fileBgColor: rgb(114, 206, 231);
+
+
+    --progressBg: rgb(49, 49, 49);
+    --progressBarColor: var(--fileBgColor);
+
+    --popupBg: #adadad;
+    --confirmBgColor: rgb(92, 174, 133);
+    --dangerBgColor: rgb(154, 70, 70);
+}
+
 * {
     margin: 0;
     padding: 0;
-    letter-spacing: 0.2rem;
+    letter-spacing: 0.15rem;
 }
 
 body {
-    font-family: 'Bodo_AmainContHeadermat-otf', 'Bodo_Amat-ttf', 'Arial';
-    color: rgb(236, 236, 236);
-    background-color: rgb(41, 41, 41);
+    font-family: 'CoolVetica-otf', 'Arial', 'Helvetica';
+    color: var(--fgColor);
+    background-color: var(--bgColor);
 }
 
-.topSpace {
-    margin-top: 3rem;
+.fgColor {
+    color: var(--fgColor);
 }
 
-.centerBox {
-    margin: auto;
-    margin-top: 3rem;
-    width: fit-content;
-    height: fit-content;
+.bgColor {
+    background-color: var(--bgColor);
 }
 
 .defaultButton {
-    border: 2px solid white;
-    background-color: gray;
+    border: 2px solid var(--fgColor);
+    background-color: var(--bgColor);
     border-radius: 5px;
-    color: white;
+    color: var(--fgColor);
     padding: 5px 20px;
 }
 
@@ -50,7 +63,7 @@ body {
 }
 
 .formBox {
-    border: 2px solid white;
+    border: 2px solid var(--fgColor);
     text-align: center;
     padding: 3rem;
     border-radius: 5px;
@@ -62,8 +75,8 @@ body {
 }
 
 .formBox > form > input {
-    background-color: gray;
-    color: white;
+    background-color: var(--popupBg);
+    color: var(--fgColor);
     padding: 0.2rem;
 }
 
@@ -80,66 +93,155 @@ body {
     border-radius: 5px;
 }
 
-.leftSidebar {
-    padding: 1rem;
-    border: 1px solid white;
-    border-radius: 0px 10px 10px 0px;
-    min-width: fit-content;
-    height: 80%;
-    overflow-y: auto;
-    float: left;
-    background-color: white;
-    color: black;
+.coreContent {
+    display: flex;
 }
 
-ul {
-    list-style-type: none;
+.topBox {
+    height: 10vh;
+    width: 100%;
+    display: flex;
+    vertical-align: middle;
+    justify-content:center;
+    align-items:center;
+}
+
+.searchBox {
+    display: flex;
+}
+
+.centerItem {
+    width: fit-content;
+    margin: auto;
+}
+
+.leftBox {
+    width: 15%;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: var(--secBgColor);
+}
+
+.rightBox {
+    width: 85%;
+    height: 90vh;
     margin: 0;
     padding: 0;
 }
 
+ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
 
 .menuitem {
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    height: fit-content;
-    margin: 2rem 0rem;
-    transition: all ease 1s;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 20px 20px;
+    background-color: var(--navItemBgColor);
+    border-radius: 10px;
 }
 
 .menuitem > a {
-    border-radius: 5px;
-    font-size: 1.2rem;
-    border: 2px solid black;
-    padding: 0.2rem 0.4rem;
     text-decoration: none;
-    color: black;
-    transition: all ease 1s;
+    display: flex;
+    height: 40px;
+    font-size: 20px;
+    color: var(--fgColor);
+    width: 100%;
+    border-radius: 10px;
+    vertical-align: middle;
+    justify-content:center;
+    align-items:center;
+    transition: all ease 0.3s;
 }
 
-.menuitem:hover {
-    transform: scale(1.1);
+.menuitem > a > * {
+    display: flex;
+    vertical-align: middle;
+    justify-content:center;
+    align-items:center;
 }
 
 .menuitem > a:hover {
-    background-color: rgb(132, 132, 132);
+    color: var(--secNavItemFgColor);
+    background-color: var(--secNavItemBgColor);
 }
 
+.navInfoText {
+    color: var(--fgColor);
+    width: 80%;
+    margin: auto;
+    margin-top: 30px;
+}
 
-.storageContent {
+.progressDiv {
+    margin-top: 10px;
+    height: 14px;
+    width: 80%;
+    background-color: var(--progressBg);
+    padding: 5px;
+    border-radius: 5px;
+}
+  
+.progressBar {
+    max-width: 100%;
+    border-radius: 2px;
+    background-color: var(--progressBarColor);
+    height: 100%;
+}
+
+.rightContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.navhelprow {
     display: flex;
     margin-top: 2rem;
     flex-wrap: wrap;
     border-radius: 20px;
     padding: 0.5rem;
-    background-color: rgb(61, 61, 61);
     width: 80%;
     max-height: 80%;
     overflow-y: auto;
-    float: right;
-    margin-right: 2%;
-    color: black;
+    margin-left: 2%;
 }
+
+.navhelprow > a {
+    font-size: 25px;
+    text-decoration: none;
+    border: 2px solid var(--fgColor);
+    padding: 5px 20px;
+    border-radius: 5px;
+    color: var(--fgColor);
+}
+
+.navhelprow > span {
+    padding: 5px;
+    font-size: 30px;
+}
+
+.uploadedItems {
+    display: flex;
+}
+
+.verticalCenter {
+    vertical-align: middle;
+    justify-content:center;
+    align-items:center;
+}
+
+
+
+
+
+
+
+
 
 .uploadedFile {
     position: relative;
@@ -147,10 +249,10 @@ ul {
     height: 200px;
     overflow: hidden;
     margin: 30px;
-    border: 3px solid black;
+    border: 3px solid var(--fgColor);
     border-radius: 5px;
     padding: 0.5rem;
-    background-color: rgb(102, 175, 195);
+    background-color: var(--fileBgColor);
 }
 
 .squarepage1 > a {
@@ -307,8 +409,12 @@ input[type="file"] {
     z-index: 50;
     padding: 2rem;
     border-radius: 20px;
-    border: 2px solid rgb(193, 193, 193);
-    background-color: rgb(62, 62, 62);
+    border: 2px solid var(--fgColor);
+    background-color: var(--popupBg);
+}
+
+.popupBox > form > div {
+    margin-top: 10px;
 }
 
 .popupBox:hover {
@@ -316,23 +422,27 @@ input[type="file"] {
 }
 
 .cancelDelete {
-    border: 2px solid white;
+    border: 2px solid var(--fgColor);
     font-size: 18px;
     background-color: rgb(111, 109, 109);
     border-radius: 5px;
-    color: white;
+    color: var(--fgColor);
     padding: 20px 50px;
 }
-
 
 .confirmedDelete {
-    border: 2px solid white;
+    border: 2px solid var(--fgColor);
     font-size: 18px;
-    background-color: rgb(154, 70, 70);
+    background-color: var(--dangerBgColor);
     border-radius: 5px;
-    color: white;
+    color: var(--fgColor);
     padding: 20px 50px;
 }
+
+.cancelDelete:hover, .confirmedDelete:hover {
+    cursor: pointer;
+}
+
 
 .displayBesides {
     display: flex; 
@@ -348,51 +458,13 @@ input[type="file"] {
     padding: 5px;
 }
 
-.progressDiv {
-    margin-top: 10px;
-    height: 10px;
-    width: 80%;
-    background-color: rgb(67, 67, 67);
-    padding: 5px;
-    border-radius: 5px;
-}
-  
-.progressBar {
-    max-width: 100%;
+.textInputColor {
+    border: 2px solid var(--fgColor);
     border-radius: 2px;
-    background-color: rgb(6, 161, 181);
-    height: 100%;
-}
-
-.navhelprow {
-    display: flex;
-    margin-top: 2rem;
-    flex-wrap: wrap;
-    border-radius: 20px;
-    padding: 0.5rem;
-    width: 80%;
-    max-height: 80%;
-    overflow-y: auto;
-    float: right;
-    margin-right: 2%;
-}
-
-.navhelprow > a {
-    font-size: 25px;
-    text-decoration: none;
-    border: 2px solid white;
-    padding: 5px 20px;
-    border-radius: 5px;
-    color: white;
-}
-
-.navhelprow > span {
-    padding: 5px;
-    font-size: 30px;
 }
 
 .userInfoBox {
-    color: white;
+    color: var(--fgColor);
     margin: 2rem;
 }
 
@@ -403,7 +475,7 @@ input[type="file"] {
 
 .askupdatebox {
     border-radius: 5px;
-    background-color: rgb(43, 43, 43);
+    background-color: var(--secBgColor);
     padding: 2rem;
 }
 
@@ -412,11 +484,11 @@ input[type="file"] {
 }
 
 .confirmUpdate {
-    border: 2px solid white;
+    border: 2px solid var(--fgColor);
     font-size: 18px;
-    background-color: rgb(92, 174, 155);
+    background-color: var(--confirmBgColor);
     border-radius: 5px;
-    color: white;
+    color: var(--fgColor);
     padding: 20px 50px;
 }
 
@@ -427,15 +499,15 @@ button:hover {
 
 .mailitem {
     display: flex; 
-    padding: 7px;
+    padding: 9px;
     border-radius: 2px;
-    background-color: rgb(39, 39, 39); 
-    margin-bottom: 10px;
+    background-color: var(--thirdBgColor); 
+    margin-bottom: 12px;
     width: fit-content;
 }
 
 .mailitem > button {
-    background-color: grey;
+    background-color: var(--dangerBgColor);
     padding: 2px;
 }
  
@@ -443,7 +515,11 @@ button:hover {
     font-size: 15px;
 }
 
-
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
 
 
 

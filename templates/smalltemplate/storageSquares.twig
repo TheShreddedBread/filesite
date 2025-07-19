@@ -1,4 +1,4 @@
-<div class="uploadedFile" id="{{data['id']}}" onclick="StopEventPropagation(event);">
+<div class="uploadedFile prevent-select" id="{{data['id']}}" onclick="StopEventPropagation(event);">
     <div class="squarepage1">
         <p class="fileOptions openFileOptionsBtn"><span class="material-symbols-outlined" onclick="openFileMenu(this);">more_vert</span></p>
         {% if data['folder'] and not data['shared'] %}
