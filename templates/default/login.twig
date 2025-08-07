@@ -12,26 +12,24 @@
     <br>
     <br>
     <div class="centerItem">
-        <div class="centerItem formBox">
+        <div class="centerItem formBox simpleShadow">
             <h3>Login</h3>
             <form method="POST">
                 <label for="username">Username:</label>
                 <br>
                 <input name="username" class="textInputColor" type="text"></input>
                 <br><br>
-                {# <label for="email">Email:</label>
-                <br>
-                <input name="email" type="email"></input>
-                <br><br> #}
                 <label for="password">Password:</label>
                 <br>
                 <input name="password" class="textInputColor" type="password"></input>
                 <br><br>
-                <button class="defaultButton">Login</button>
-                {% if data['toggle'] %}
-                    <br><br>
-                    {{data['error']}}
-                {% endif %}
+                <div class="centerItem">
+                    <button class="defaultButton">Login</button>
+                    {% if data['toggle'] %}
+                        <br><br>
+                        {{data['error']}}
+                    {% endif %}
+                </div>
             </form>
             <br><br>
             <span>Don't have an account?</span><br>

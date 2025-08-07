@@ -16,7 +16,14 @@
             <div class="rightBox" onclick="closeAllFileOptionMenu(this)">
                 <div class="topBox">
                     <div class="searhBox">
-                        <h4 class="centerItem">Search: <input id="storageSearch" class="searchInput searchPadding" type="text" autocomplete="off" onchange="filter(this)"></h4>
+                        <div class="centerItem"><b>Search:</b>
+                            <div class="searchInputBox">
+                                <input id="storageSearch" class="searchInput searchPadding" type="text" autocomplete="off" onchange="filter(this)" oninput="updateMatches(this)" placeholder="Type search here"><span onclick="filter(this.parentElement)" class="roundSearchGlass"><span class="material-symbols-outlined">search</span></span>
+                                <div id="searchDropdown" style="display: none;">
+                                
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

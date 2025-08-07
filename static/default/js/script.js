@@ -1,5 +1,9 @@
 function filter(elem) {
     var search = document.getElementById("storageSearch").value;
+    filterFilesFromText(search)
+}
+
+function filterFilesFromText(search) {
     var items = document.getElementsByClassName("uploadedFile");
     for (let i = 0; i < items.length; i++) {
         var filename = items[i].getElementsByClassName("filename")[0].textContent;
@@ -9,6 +13,9 @@ function filter(elem) {
             items[i].hidden = true;
         }
     }
+    
+    setTimeout( function() { document.getElementById("searchDropdown").style = "display: none;"; }, 500);
+    
 }
 
 function openFileMenu(elem) {
@@ -87,6 +94,57 @@ function deleteUser(elem) {
 
 function submitForm(id) {
     document.getElementById(id).submit();
+}
+
+var searchDropdownItems = new Array();
+
+function filterWithDropdown(pos) {
+    if (pos < searchDropdownItems.length && pos >= 0) {
+        updateMatchesFromText(searchDropdownItems[pos][0]);
+        document.getElementById("storageSearch").value = searchDropdownItems[pos][0];
+        filterFilesFromText(searchDropdownItems[pos][0]);
+    }
+}
+
+function updateMatches(elem) {
+    updateMatchesFromText(elem.value)
+}
+
+function updateMatchesFromText(text) {
+    searchDropdownItems = new Array();
+    document.getElementById("searchDropdown").innerHTML = ""
+
+    var itemsFound = false;
+    var items = document.getElementsByClassName("uploadedFile");
+    var counter = 0;
+    for (let i = 0; i < items.length; i++) {
+        var filename = items[i].getElementsByClassName("filename")[0].textContent;
+        if (filename.toLowerCase().includes(text.toLowerCase()) || text.length == 0) {
+            itemsFound = true;
+
+            var base = document.createElement("div");
+            base.classList.add("searchItem");
+            searchDropdownItems.push([filename, i]);
+            base.setAttribute("onclick", `filterWithDropdown(${counter})`);
+            counter++;
+
+            var suggestedFileName = document.createElement("a");
+            suggestedFileName.textContent = filename;
+            base.appendChild(suggestedFileName);
+
+            document.getElementById("searchDropdown").appendChild(base);
+        }
+    }
+
+    if (!itemsFound) {
+        document.getElementById("searchDropdown").textContent = "No items found"
+    }
+
+    if (text.length == 0) {
+        document.getElementById("searchDropdown").style = "display: none;";
+    } else {
+        document.getElementById("searchDropdown").style = "";
+    }
 }
 
 // if (document.addEventListener) {

@@ -12,7 +12,7 @@
     <br>
     <br>
     <div class="centerItem">
-        <div class="centerItem formBox">
+        <div class="centerItem formBox simpleShadow">
             <h3>Signup</h3>
             <form method="POST">
                 <label for="username">Username:</label>
@@ -27,11 +27,13 @@
                 <br>
                 <input name="password" type="password"></input>
                 <br><br>
-                <button class="defaultButton">Signup</button>
-                {% if data['toggle'] %}
-                    <br><br>
-                    {{data['error']}}
-                {% endif %}
+                <div class="centerItem">
+                    <button class="defaultButton">Signup</button>
+                    {% if data['toggle'] %}
+                        <br><br>
+                        {{data['error']}}
+                    {% endif %}
+                </div>
             </form>
             <br><br>
             <span>Already have an account?</span><br>

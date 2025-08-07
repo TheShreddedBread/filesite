@@ -2,6 +2,7 @@ import os
 from accounts import Accounts
 from storage import Storage
 from modules import Modules
+from theme import Theme
 import random
 import time
 
@@ -59,8 +60,8 @@ app.add_url_rule('/storage/shared/<path:path>', view_func=storage.storageSharedP
 app.add_url_rule('/storage/download', view_func=storage.storageDownloadFile, methods=['GET', 'POST'])
 app.add_url_rule('/storage/settings', view_func=storage.storageUserSettingsPage, methods=['GET', 'POST'])
 
-
+theme = Theme(app)
 
 @app.route('/')
 def startPage():
-    return render_template("start.twig", loggedIn=acc.userIsLoggedIn())
+    return theme.loadFileWithTheme("start.twig", loggedIn=acc.userIsLoggedIn())

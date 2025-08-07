@@ -2,12 +2,14 @@
 import hashlib
 import math
 import sqlite3
+from theme import Theme
 from modules import Modules
 from flask import Flask, render_template, request, redirect, url_for, session
 
 class Accounts:
     def __init__(self, app):
         self.app = app
+        self.theme = Theme(self.app)
 
 
     def attemptLogin(self, user, psw):
@@ -101,15 +103,15 @@ class Accounts:
 
                 if(status['success'] == False):
                     data['toggle'] = True
-                    data['error'] = render_template("popup/error.twig", text="Password or<br>username<br>is wrong")
-                    return render_template("login.twig", data=data)
+                    data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Password or<br>username<br>is wrong")
+                    return self.theme.loadFileWithTheme("login.twig", data=data)
                 
                 else: 
                     session['userId'] = status['id']
                     return redirect(url_for("storageHomePage"))
 
         data['toggle'] = False
-        return render_template("login.twig", data=data)
+        return self.theme.loadFileWithTheme("login.twig", data=data)
 
 
     def signupPage(self):
@@ -120,24 +122,24 @@ class Accounts:
                 email = request.form['email']
                 if(self.usernameIsTaken(name)):
                     data['toggle'] = True
-                    data['error'] = render_template("popup/error.twig", text="Username is<br>already taken")
-                    return render_template("signup.twig", data=data)
+                    data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Username is<br>already taken")
+                    return self.theme.loadFileWithTheme("signup.twig", data=data)
                 
                 if(self.emailIsTaken(email)):
                     data['toggle'] = True
-                    data['error'] = render_template("popup/error.twig", text="Email is<br>already assigned<br>to an account")
-                    return render_template("signup.twig", data=data)
+                    data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Email is<br>already assigned<br>to an account")
+                    return self.theme.loadFileWithTheme("signup.twig", data=data)
                 
                 psw = Modules.hashPass(request.form['password'])
                 status = self.attemptSignup(name, email, psw)
 
                 if(status['success'] == False):
                     data['toggle'] = True
-                    data['error'] = render_template("popup/error.twig", text="Something went wrong<br>please try again")
-                    return render_template("signup.twig", data=data)
+                    data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Something went wrong<br>please try again")
+                    return self.theme.loadFileWithTheme("signup.twig", data=data)
                 else: 
                     session['userId'] = status['id']
                     return redirect(url_for("storageHomePage"))
 
         data['toggle'] = False
-        return render_template("signup.twig", data=data)
+        return self.theme.loadFileWithTheme("signup.twig", data=data)
