@@ -5,11 +5,15 @@
         <br><br>
         <form method="POST" id="toggleshare" onclick="StopEventPropagation(this);">
             <input name="type" value="toggleshare" hidden>
-            <p>Share enabled</a>
-            <label class="switch">
-                <input type="checkbox" onchange='submitForm("toggleshare")' name='sharestate' value='allowed' {% if checked %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
+            <div>
+                <span>Sharing enabled</span>
+            </div>
+            <div>
+                <label class="switch">
+                    <input type="checkbox" onchange='submitForm("toggleshare")' name='sharestate' value='allowed' {% if checked %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+            </div>
         </form>
         <br><br>
         {% if checked %}

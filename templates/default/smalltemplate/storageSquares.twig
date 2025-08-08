@@ -22,8 +22,7 @@
         <p class="fileOptions closeFileOptionsBtn"><span class="material-symbols-outlined" onclick="closeFileMenu(this);">close</span></p>
         <div class="squarepage2btn">
           {% if not data['folder'] %}
-            <button onclick="alerFileInfo(this)"  class="page2button"><span class="material-symbols-outlined">info</span>Information</button><br>
-          
+            <button onclick="alertFileInfo(this)"  class="page2button"><span class="material-symbols-outlined">info</span>Information</button><br>
             <form method="POST" name="download"><input type="text" name="type" value="download" hidden/><input type="number" name="id" value="{{data['id']}}" hidden/><button class="page2button"><span class="material-symbols-outlined">download</span>Download</button></form>
             {% endif %}
             {% if not data['shared'] %}

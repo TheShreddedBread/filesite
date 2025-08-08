@@ -8,26 +8,6 @@
     </head>
     <body onclick="closeAllFileOptionMenu(this); StopEventPropagation(event);">
         <noscript><h1>PLEASE ENABLE JAVASCRIPT OR SITE MIGHT NOT WORK CORRECTLY</h1></noscript>
-        {# {{ data['popupHTML'] }}
-        <div class="leftSidebar">
-            {{ data['navbarHTML'] }}
-        </div>
-        <div class="storageContent" onclick="closeAllFileOptionMenu(this); StopEventPropagation(event);">
-            <div class="userInfoBox" onclick="StopEventPropagation(event);">
-                <h5>Personal Information</h5>
-                <br>
-                <p>Username: {{name}} </p><br>
-                <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
-                    <input name="askforupdate" value="updateemail" hidden>
-                    <p>Email: {{email}} <button><span class="material-symbols-outlined">edit</span></p></button>
-                </form><br>
-                <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
-                    <input name="askforupdate" value="updatepsw" hidden>
-                    <p>Password: ***** <button><span class="material-symbols-outlined">edit</span></button>
-                </form></p>
-            </div>
-        </div> #}
-
         {{ data['popupHTML'] }}
         <div class="coreContent prevent-select">
             <div class="leftBox">
@@ -35,17 +15,18 @@
             </div>
             <div class="rightBox" onclick="closeAllFileOptionMenu(this)">
                 <div class="rightContent">
-                    <div class="userInfoBox" onclick="StopEventPropagation(event);">
+                    {{ alert }}
+                    <div class="userInfoBox simpleShadow" onclick="StopEventPropagation(event);">
                         <h5>Personal Information</h5>
                         <br>
                         <p>Username: {{name}} </p><br>
                         <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
                             <input name="askforupdate" value="updateemail" hidden>
-                            <p>Email: {{email}} <button><span class="material-symbols-outlined">edit</span></button></p>
+                            <p>Email: {{email}} <button class="roundIconButton"><span class="material-symbols-outlined">edit</span></button></p>
                         </form><br>
                         <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
                             <input name="askforupdate" value="updatepsw" hidden>
-                            <p>Password: ***** <button><span class="material-symbols-outlined">edit</span></button></p>
+                            <p>Password: ***** <button class="roundIconButton"><span class="material-symbols-outlined">edit</span></button></p>
                         </form><br>
                         <form action="/storage/settings" method="POST" onclick="StopEventPropagation(this);">
                             <input name="askforupdate" value="updatetheme" hidden>
@@ -54,7 +35,7 @@
                                 {% for theme in themes %}
                                     <option value="{{loop.index0}}">{{theme['name']}}</option>
                                 {% endfor %}
-                            </select>&nbsp;<button><span class="material-symbols-outlined">refresh</span></button></p>
+                            </select>&nbsp;<button class="roundIconButton"><span class="material-symbols-outlined">refresh</span></button></p>
                         </form>
                     </div>
                 </div>

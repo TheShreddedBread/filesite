@@ -15,14 +15,11 @@
     --secBgColor: #b8b8b8;
     --thirdBgColor: #818181;
 
-    /* --navItemBgColor: #2090db; */
     --navItemBgColor: #78c9ff;
     --secNavItemFgColor: black;
-    /* --secNavItemBgColor: #206bdb; */
     --secNavItemBgColor: #3f99ff;
 
     --fileBgColor: rgb(81, 159, 211);
-
 
     --progressBg: rgb(49, 49, 49);
     --progressBarColor: var(--fileBgColor);
@@ -52,12 +49,25 @@ body {
     background-color: var(--bgColor);
 }
 
+.startPageBox {
+   background-color: var(--bgColor); 
+   padding: 10rem;
+   border-radius: 3px;
+}
+
 .defaultButton {
     border: 2px solid var(--fgColor);
     background-color: var(--bgColor);
     border-radius: 5px;
     color: var(--fgColor);
     padding: 5px 20px;
+    align-items: center;
+    text-align: center;
+}
+
+.defaultButton > * {
+    width: fit-content;
+    margin: auto;
 }
 
 .simpleShadow {
@@ -66,6 +76,7 @@ body {
 
 .defaultButton:hover {
     cursor: pointer;
+    transform: scale(1.01);
 }
 
 .formBox {
@@ -316,14 +327,6 @@ ul {
     align-items:center;
 }
 
-
-
-
-
-
-
-
-
 .uploadedFile {
     position: relative;
     width: 200px;
@@ -471,13 +474,42 @@ input[type="file"] {
     cursor: default;
 }
 
-.alertpopup {
+.alertBox {
     position: absolute;
-    left: 0;
-    top: 10%;
+    left: 0; 
+    right: 0; 
+    margin-inline: auto; 
     width: fit-content;
     margin: auto;
+    margin-top: 1rem;
     z-index: 100;
+    opacity: 0.8;
+    transition: opacity 400ms ease-in-out 0s;
+    box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+}
+
+.alertContent {
+    font-size: 20px;
+    padding: 1rem 4rem;
+    color: var(--bgColor);
+}
+
+.alertContent > span {
+    margin-left: 1rem; 
+    border: 2px solid var(--bgColor);
+    padding: 2px;
+    border-radius: 20px;
+}
+
+.alertContent > span:hover {
+    cursor: pointer;
+}
+
+.alertProgress {
+    width: 100%;
+    height: 5px;
+    opacity: 0.3;
+    transition: width 1000ms ease;
 }
 
 .successpopup {
@@ -491,6 +523,7 @@ input[type="file"] {
     z-index: 50;
     padding: 2rem;
     border-radius: 20px;
+    margin-top: 2rem;
     border: 2px solid var(--fgColor);
     background-color: var(--popupBg);
 }
@@ -546,8 +579,13 @@ input[type="file"] {
 }
 
 .userInfoBox {
+    padding: 2rem;
+    border: 0 solid var(--fgColor);
+    border-radius: 5px;
     color: var(--fgColor);
-    margin: 2rem;
+    width: fit-content;
+    min-width: 400px;
+    margin: 10rem auto;
 }
 
 .userInfoBox > h5 {
@@ -559,6 +597,18 @@ input[type="file"] {
     border-radius: 5px;
     background-color: var(--secBgColor);
     padding: 2rem;
+}
+
+.roundIconButton {
+    background-color: var(--secBgColor);
+    padding: 4px;
+    border: none;
+    border-radius: 20px;
+}
+
+.roundIconButton > span {
+    width: fit-content;
+    margin: auto;
 }
 
 .textInputWider {
@@ -605,22 +655,31 @@ button:hover {
 
 
 
-
+#toggleshare {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+#toggleshare > div {
+    margin: 0.2rem;
+    height: fit-content;
+    width: fit-content;
+}
 
 .switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
-  }
+}
   
-  .switch input { 
+.switch input { 
     opacity: 0;
     width: 0;
     height: 0;
-  }
+}
   
-  .slider {
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -630,9 +689,9 @@ button:hover {
     background-color: #ccc;
     -webkit-transition: .4s;
     transition: .4s;
-  }
+}
   
-  .slider:before {
+.slider:before {
     position: absolute;
     content: "";
     height: 26px;
@@ -642,27 +701,27 @@ button:hover {
     background-color: white;
     -webkit-transition: .4s;
     transition: .4s;
-  }
+}
   
-  input:checked + .slider {
+input:checked + .slider {
     background-color: #2196F3;
-  }
+}
   
-  input:focus + .slider {
+input:focus + .slider {
     box-shadow: 0 0 1px #2196F3;
-  }
+}
   
-  input:checked + .slider:before {
+input:checked + .slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
-  }
+}
   
-  /* Rounded sliders */
-  .slider.round {
+/* Rounded sliders */
+.slider.round {
     border-radius: 34px;
-  }
+}
   
-  .slider.round:before {
+.slider.round:before {
     border-radius: 50%;
-  }
+}

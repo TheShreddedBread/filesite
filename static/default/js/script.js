@@ -42,7 +42,7 @@ function closeAllFileOptionMenu(elem) {
     }
 }
 
-function alerFileInfo(elem) {
+function alertFileInfo(elem) {
     alert(`Name: ${elem.parentElement.parentElement.parentElement.getElementsByClassName("fileName")[0].textContent}\nSize: ${elem.parentElement.parentElement.parentElement.getElementsByClassName("fileSize")[0].textContent}`);
 }
 
@@ -147,17 +147,36 @@ function updateMatchesFromText(text) {
     }
 }
 
-// if (document.addEventListener) {
-//     document.addEventListener('contextmenu', function(e) {
-//         alert("You've tried to open context menu"); //here you draw your own menu
-//         e.preventDefault();
-//     }, false);
-//     } else {
-//     document.attachEvent('oncontextmenu', function() {
-//         alert("You've tried to open context menu");
-//         window.event.returnValue = false;
-//     });
-// } 
+var hoverOverFile = [false,-1]
+if (document.addEventListener) {
+    var files = document.getElementsByClassName("uploadedFile");
+    for(let i = 0; i < files.length; i++) {
+        files[i].onmouseenter = function() {hoverOverFile = [true, i];}
+        files[i].onmouseleave = function() {hoverOverFile = [false, -2];}
+        // files[i].contextmenu = function() {alert("alr")}
+    }
+    document.addEventListener('contextmenu', function(e) {
+        if (hoverOverFile[0]) {
+            openFileOptions();
+        }
+        e.preventDefault();
+    }, false);
+    } else {
+    document.attachEvent('oncontextmenu', function() {
+        if (hoverOverFile[0]) {
+            openFileOptions();
+        }
+        window.event.returnValue = false;
+    });
+} 
+
+function closeAlert(elem) {
+    elem.parentElement.parentElement.remove()
+}
+
+function openFileOptions() {
+    openFileMenu(document.getElementsByClassName("uploadedFile")[hoverOverFile[1]].getElementsByClassName("openFileOptionsBtn")[0].getElementsByClassName("material-symbols-outlined")[0]);
+}
 
 function StopEventPropagation(event) {
     if (event.stopPropagation) {

@@ -1,5 +1,28 @@
-<div class="alertpopup successpopup">
-    <div class="centerBox">
-        <h3>File has successfully been deleted</h3>
+<div class="alertBox">
+    <div class="centerBox alertContent" style="background-color: {{color}};">
+        <a>{{text}}</a>
+        <span onclick="closeAlert(this)" class="material-symbols-outlined">close</span>
     </div>
+    <div class="alertProgress" style="background-color: {{color}}; transition-duration: {{ms}}ms;"></div>
 </div>
+<script>
+    setTimeout(function() {
+        items = document.getElementsByClassName("alertProgress")
+        for(var i = 0; i < items.length; i++) {
+            items[i].style.width = "0"
+        }
+    }, 100)
+    setTimeout(function() {
+        items = document.getElementsByClassName("alertBox")
+        for(var i = 0; i < items.length; i++) {
+            items[i].style.opacity = "0"
+        }
+        
+        setTimeout(function() {
+            items = document.getElementsByClassName("alertBox")
+            for(var i = 0; i < items.length; i++) {
+                items[i].remove()
+            }
+        }, 1000)
+    }, ({{ms}}+100))
+</script>

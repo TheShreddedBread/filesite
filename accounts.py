@@ -104,14 +104,14 @@ class Accounts:
                 if(status['success'] == False):
                     data['toggle'] = True
                     data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Password or<br>username<br>is wrong")
-                    return self.theme.loadFileWithTheme("login.twig", data=data)
+                    return self.theme.loadFileWithTheme("account/login.twig", data=data)
                 
                 else: 
                     session['userId'] = status['id']
                     return redirect(url_for("storageHomePage"))
 
         data['toggle'] = False
-        return self.theme.loadFileWithTheme("login.twig", data=data)
+        return self.theme.loadFileWithTheme("account/login.twig", data=data)
 
 
     def signupPage(self):
@@ -123,12 +123,12 @@ class Accounts:
                 if(self.usernameIsTaken(name)):
                     data['toggle'] = True
                     data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Username is<br>already taken")
-                    return self.theme.loadFileWithTheme("signup.twig", data=data)
+                    return self.theme.loadFileWithTheme("account/signup.twig", data=data)
                 
                 if(self.emailIsTaken(email)):
                     data['toggle'] = True
                     data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Email is<br>already assigned<br>to an account")
-                    return self.theme.loadFileWithTheme("signup.twig", data=data)
+                    return self.theme.loadFileWithTheme("account/signup.twig", data=data)
                 
                 psw = Modules.hashPass(request.form['password'])
                 status = self.attemptSignup(name, email, psw)
@@ -136,10 +136,10 @@ class Accounts:
                 if(status['success'] == False):
                     data['toggle'] = True
                     data['error'] = self.theme.loadFileWithTheme("popup/error.twig", text="Something went wrong<br>please try again")
-                    return self.theme.loadFileWithTheme("signup.twig", data=data)
+                    return self.theme.loadFileWithTheme("account/signup.twig", data=data)
                 else: 
                     session['userId'] = status['id']
                     return redirect(url_for("storageHomePage"))
 
         data['toggle'] = False
-        return self.theme.loadFileWithTheme("signup.twig", data=data)
+        return self.theme.loadFileWithTheme("account/signup.twig", data=data)

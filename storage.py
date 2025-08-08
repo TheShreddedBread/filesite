@@ -4,6 +4,7 @@ import os
 import sqlite3
 import time
 from theme import Theme
+from alert import Alert
 from modules import Modules
 import math
 from flask import Flask, render_template, request, redirect, send_from_directory, url_for, session
@@ -13,6 +14,7 @@ class Storage:
         self.acc = acc
         self.app = app
         self.theme = Theme(self.app)
+        self.alert = Alert(self.app)
 
     def convert_size(self, size_bytes):
         if size_bytes == 0:
@@ -254,17 +256,18 @@ class Storage:
                 fileId = session['sharetargetId']
                 val = request.form.getlist('sharestate')
                 if (len(val) != 0):
+                    self.alert.addAlert("Sharing enabled", "success")
                     if (val[0] == "allowed"):
                         if path == "":
                             Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
                         else:
                             sharedFolders = Modules.selectFromDB(f"SELECT id FROM files WHERE filehash = '{path}' AND uploadUserId = '{self.acc.getUserId()}' AND folder = '1' AND share = '1'")
                             if (len(sharedFolders) == 1):
-                                print(path)
                                 Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='{path}' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'") # in shared folder
                             else:
                                 Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'") # not in shared folder
                 else: 
+                    self.alert.addAlert("Sharing disabled", "danger")
                     Modules.executeIntoDB(f"UPDATE files SET share='0' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
             
             elif request.form['type'] == "updatesharedusers":
@@ -284,11 +287,8 @@ class Storage:
                     allToBeAdded = []
                     for mail in newMailList:
                         correctMail = mail.strip()
-                        print(correctMail)
                         result = Modules.selectFromDB(f"SELECT id, email FROM users WHERE email = '{correctMail}'")
-                        print(result)
                         if (len(result) == 1):
-                            print("got")
                             if (result[0][0] != self.acc.getUserId()):
                                 allToBeAdded.append(result[0][0])
                                 if (len(Modules.selectFromDB(f"SELECT id FROM usershare WHERE sender = '{self.acc.getUserId()}' AND reciver = '{result[0][0]}' AND fileId = '{targetFile[0][0]}'")) == 0):
@@ -299,19 +299,22 @@ class Storage:
                         for user in currentShared:
                             if (user[0] not in allToBeAdded):
                                 Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND reciver = '{user[0]}' AND fileId = '{targetFile[0][0]}'")
-                
+                    self.alert.addAlert("Users have been updated", "success")
 
             elif (session.get('deleteFileHash') != None):
                 if (session.get('deleteFileHash') == request.form['type']):
                     fileData = Modules.selectFromDB(f"SELECT id, name, filehash, path, folder FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{session.get('deleteFileId')}' LIMIT 1")
                     if len(fileData) == 1:
                         if (fileData[0][4] == 0):
+                            self.alert.addAlert("File has been deleted", "error")
                             Modules.executeIntoDB(f"DELETE FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{fileData[0][0]}' AND filehash = '{fileData[0][2]}'")
                             Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{fileData[0][0]}' AND filehash = '{fileData[0][2]}'")
                             filePath = f"data/userfiles/{self.acc.getUserUniqueCode()}/{fileData[0][2]}{self.splitFilename(fileData[0][1])[1]}"
                             if (os.path.exists(filePath)):
                                 os.remove(filePath)
                         else:
+                            self.alert.addAlert("Folder has been deleted", "error")
+
                             allUserFiles = Modules.selectFromDB(f"SELECT id, path, folder, name, filehash FROM files WHERE uploadUserId = '{self.acc.getUserId()}'")
                            
                             targetedPath = fileData[0][1] + "/"
@@ -323,17 +326,15 @@ class Storage:
                                     Modules.executeIntoDB(f"DELETE FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{uFile[0]}'")
                                     Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{uFile[0]}'")
                                     filePath = f"data/userfiles/{self.acc.getUserUniqueCode()}/{uFile[4]}{self.splitFilename(uFile[3])[1]}"
-                                    print(filePath)
                                     if (os.path.exists(filePath) and uFile[2] == 0):
                                         os.remove(filePath)
 
-                            print("FOLDER!!")
                         session['deleteFileHash'] = None
                         session['deleteFileId'] = None
                     
         data['files'] = self.getFilesForPath(path)
         data['navbarHTML'] = self.theme.loadFileWithTheme("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
-        return self.theme.loadFileWithTheme("storage/home.twig", data=data)
+        return self.theme.loadPage("storage/home.twig", data=data)
     
 
     def storageSharedPage(self, path=""):
@@ -376,12 +377,10 @@ class Storage:
                             # userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0], fileToDownload[0]))
                             userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0]))
                             fileExt = self.splitFilename(fileToDownload[2])[1]
-                            print("1" + userFilesPath)
-                            print("2" + fileToDownload[1] + fileExt)
                             return send_from_directory(userFilesPath, (fileToDownload[1] + fileExt), as_attachment=True, download_name=(fileToDownload[2]))
         data['files'] = self.getSharedFilesForPath(path, shared=True)
         data['navbarHTML'] = self.theme.loadFileWithTheme("smalltemplate/navbar.twig", firstpage=(self.getLastPath()==""), backpath=ahrefpath, fileusedtext=self.getFileUsedText())
-        return self.theme.loadFileWithTheme("storage/home.twig", data=data)
+        return self.theme.loadPage("storage/home.twig", data=data)
     
 
     def storageUploadPage(self):
@@ -411,7 +410,7 @@ class Storage:
             filedata = f.read()
             filesize = len(filedata) #Kan behövas fixas mer: https://stackoverflow.com/questions/15772975/flask-get-the-size-of-request-files-object
             if (self.acc.getUserStorageLeft() - filesize < 0):
-                print("Not enough space")
+                self.alert.addAlert("Not enough space left", "error")
                 return redirect("/storage/home")
             if (len(Modules.selectFromDB(f"SELECT * FROM files WHERE uploadUserId = {self.acc.getUserId()}")) == 0 and not os.path.exists(pathToUploadTo)):
                 os.mkdir(pathToUploadTo)
@@ -424,6 +423,7 @@ class Storage:
                     uploadedPath = "/storage/home"
                     if (last != ""):
                         uploadedPath += ("/" + last)
+                    self.alert.addAlert("File has been uploaded", "default")
                 return redirect(uploadedPath)
             else:
                 return redirect("/storage/upload")
@@ -463,13 +463,13 @@ class Storage:
 
                 filehash = Modules.getUniqueCode(foldername)
                 storagepath = self.getLastPath()
-
                 Modules.executeIntoDB(f"INSERT INTO files (path, name, filehash, uploadUserId, share, folder, filesize) VALUES ('{storagepath}', '{foldername}', '{filehash}', {userId}, false, true, {0})")
+                self.alert.addAlert("Folder has been created", "default")
                 if (storagepath == ""):
                     return redirect("home")
                 else:
                     return redirect("home/" + storagepath)
-        
+
         return self.theme.loadFileWithTheme("storage/home.twig", data=data)
     
 
@@ -503,13 +503,16 @@ class Storage:
             if hashpsw == res2[0][0]:
                 if request.form['type'] == "email":
                     self.acc.updateMail(request.form['newInfo'], res2[0][1], res2[0][0])
+                    self.alert.addAlert("Password has been updated", "success")
                     return redirect("settings")
                 if request.form['type'] == "password":
                     newPsw = Modules.hashPass(request.form['newInfo'])
+                    self.alert.addAlert("Password has been updated", "default")
                     self.acc.updatePassword(newPsw, res2[0][1], res2[0][0])
                     return redirect("settings")
-                
-        return self.theme.loadFileWithTheme("storage/settings.twig", themes=allThemes, curTheme = self.theme.getUserTheme(), name=res[0][0], email=res[0][1], data=data)
+            else:
+                self.alert.addAlert("Wrong password", "error")
+        return self.theme.loadPage("storage/settings.twig", themes=allThemes, curTheme = self.theme.getUserTheme(), name=res[0][0], email=res[0][1], data=data)
 
     def storageOpenShareMenu(self):
         data = self.getDataDefault()
@@ -532,5 +535,5 @@ class Storage:
 # Lägg till teman [KLART]
 # Återställa lösen osv, kontohantering [Delvis]
 # Lägg till så att mappar delas korrekt
-# POPUP som typ "file upload success" och "Not enough space", använda sessions?
+# POPUP som typ "file upload success" och "Not enough space", använda sessions? [KLART]
 # Säkra upp för sql-injections, felaktiga inputs och dylikt
