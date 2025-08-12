@@ -47,7 +47,7 @@ class Storage:
             givenpath = givenpath[len(startPath):-1]
         if givenpath == "":
             return True
-        folderpath = Modules.selectFromDB(f"SELECT id FROM files WHERE folder = '1' AND uploadUserId = '{self.acc.getUserId()}' AND filehash = '{givenpath}'")
+        folderpath = Modules.selectFromDB("SELECT id FROM files WHERE folder = ? AND uploadUserId = ? AND filehash = ?", ('1', self.acc.getUserId(), givenpath))
         if (len(folderpath) != 0):
             if (len(folderpath[0]) != 0):
                 return True
@@ -57,16 +57,8 @@ class Storage:
             givenpath = givenpath[len(sharedPath):-1]
         if givenpath == "":
             return True
-
-        # Mycket förkortad? KOLLA IGEN!
-        # fileId = Modules.selectFromDB(f"SELECT id, uploadUserId FROM files WHERE filehash = '{givenpath}'")
-        # if (len(fileId) != 0):
-        #     if (len(fileId[0]) != 0):
-        #         folderpath = Modules.selectFromDB(f"SELECT id FROM usershare WHERE reciver = '{self.acc.getUserId()}' AND sender = '{fileId[0][0]}' AND fileId = '{fileId[0][1]}'")
-        #         if (len(folderpath) != 0):
-        #             if (len(folderpath[0]) != 0):
-        #                 return True
-        fileId = Modules.selectFromDB(f"SELECT id FROM usershare WHERE filehash = '{givenpath}' and reciver = '{self.acc.getUserId()}'")
+        
+        fileId = Modules.selectFromDB("SELECT id FROM usershare WHERE filehash = ? and reciver = ?", (givenpath, self.acc.getUserId()))
         if (len(fileId) != 0):
             if (len(fileId[0]) != 0):
                 return True
@@ -76,7 +68,7 @@ class Storage:
         pathToHome = []
         currpath = givenpath
         while currpath != "":
-            folderpath = Modules.selectFromDB(f"SELECT path, name FROM files WHERE folder = '1' AND uploadUserId = '{self.acc.getUserId()}' AND filehash = '{currpath}'")
+            folderpath = Modules.selectFromDB("SELECT path, name FROM files WHERE folder = ? AND uploadUserId = ? AND filehash = ?", ('1', self.acc.getUserId(), currpath))
             if (len(folderpath) != 1):
                 break
             if (len(folderpath[0]) != 2):
@@ -91,18 +83,18 @@ class Storage:
         currpath = givenpath
         while currpath != targetPath:
             fail = True
-            fileId = Modules.selectFromDB(f"SELECT id, uploadUserId, share FROM files WHERE filehash = '{currpath}' and folder = '1'")
+            fileId = Modules.selectFromDB("SELECT id, uploadUserId, share FROM files WHERE filehash = ? and folder = ?", (currpath, '1'))
 
             if (len(fileId) != 0):
                 if (len(fileId[0]) != 0):
                     if (fileId[0][2] == 0): # If share = 0
                         currpath = targetPath
                         break
-                    sharedpath = Modules.selectFromDB(f"SELECT id FROM usershare WHERE reciver = '{self.acc.getUserId()}' AND sender = '{fileId[0][1]}' AND fileId = '{fileId[0][0]}'")
+                    sharedpath = Modules.selectFromDB("SELECT id FROM usershare WHERE reciver = ? AND sender = ? AND fileId = ?", (self.acc.getUserId(), fileId[0][1], fileId[0][0]))
 
                     if (len(sharedpath) != 0):
                         if (len(sharedpath[0]) != 0):
-                            folderpath = Modules.selectFromDB(f"SELECT path, name FROM files WHERE folder = '1' AND uploadUserId = '{fileId[0][1]}' AND filehash = '{currpath}'")
+                            folderpath = Modules.selectFromDB("SELECT path, name FROM files WHERE folder = ? AND uploadUserId = ? AND filehash = ?", ('1', fileId[0][1], currpath))
                             
                             if (len(folderpath) == 1):
                                 if (len(folderpath[0]) == 2):
@@ -138,7 +130,7 @@ class Storage:
         filesHTML = ""
         clickpath = self.getLastPath()
         # id INTEGER, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER
-        foundFiles = Modules.selectFromDB(f"SELECT * FROM files WHERE uploadUserId = {self.acc.getUserId()} AND path='{path}'")
+        foundFiles = Modules.selectFromDB("SELECT * FROM files WHERE uploadUserId = ? AND path= ?", (self.acc.getUserId(), path))
         for file in foundFiles:
             fancyname = self.splitFilename(file[2])[0][0:12]
             if (len(file[2]) > len(fancyname)):
@@ -149,7 +141,7 @@ class Storage:
 
             filesHTML += self.theme.loadFileWithTheme("smalltemplate/storageSquares.twig", data={"id":file[0], "folder": file[6], "name": file[2], "fancyname": fancyname, "size": self.convert_size(file[7]), "path": clickpath})
         if (len(filesHTML) == 0):
-            filesHTML = "<br><br><div style='color: var(--fgColor); border: 2px solid var(--fgColor); width: fit-content; padding: 2rem; margin: 2rem;'><h1>Start by uploading file</h1></div>"
+            filesHTML = self.theme.loadFileWithTheme("smalltemplate/nofilesuploaded.twig")
         return filesHTML
 
     def getSharedFilesForPath(self, path = "", shared = False):
@@ -157,9 +149,9 @@ class Storage:
         loadedSharedFiles = []
         clickpath = self.getLastPath()
         # id INTEGER, path TEXT, name TEXT, filehash TEXT, uploadUserId INTEGER, share BOOLEAN, folder BOOLEAN, filesize INTEGER, sharePath TEXT
-        foundFiles = Modules.selectFromDB(f"SELECT * FROM usershare WHERE reciver = {self.acc.getUserId()}")
+        foundFiles = Modules.selectFromDB("SELECT * FROM usershare WHERE reciver = ?", (self.acc.getUserId(),))
         for file in foundFiles:
-            targetFile = Modules.selectFromDB(f"SELECT * FROM files WHERE id = '{file[3]}' AND uploadUserId = '{file[1]}' AND share = '1' AND sharePath = '{path}'")
+            targetFile = Modules.selectFromDB("SELECT * FROM files WHERE id = ? AND uploadUserId = ? AND share = ? AND sharePath = ?", (file[3], file[1], path))
             if (len(targetFile) != 1):
                 continue
             targetFile = targetFile[0]
@@ -173,7 +165,7 @@ class Storage:
             filesHTML += self.theme.loadFileWithTheme("smalltemplate/storageSquares.twig", data={"id":targetFile[0], "folder": targetFile[6], "name": targetFile[2], "fancyname": fancyname, "size": self.convert_size(targetFile[7]), "path": clickpath, "shared": shared})
         session['loadedSharedFiles'] = loadedSharedFiles
         if (len(filesHTML) == 0):
-            filesHTML = "<br><br><div style='color: var(--fgColor); border: 2px solid var(--fgColor); width: fit-content; padding: 2rem; margin: 2rem;'><h1>You have no files shared with you</h1></div>"
+            filesHTML = self.theme.loadFileWithTheme("smalltemplate/nosharedfiles.twig")
         return filesHTML
 
     def generateNavHelp(self, path):
@@ -210,7 +202,7 @@ class Storage:
         if request.method == 'POST' and 'type' in request.form:   
             if request.form['type'] == "download":
                 fileId = request.form['id']
-                files = Modules.selectFromDB(f"SELECT path, filehash, name FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                files = Modules.selectFromDB("SELECT path, filehash, name FROM files WHERE id = ? AND uploadUserId = ?", (fileId, self.acc.getUserId()))
                 fileToDownload = files[0]
                 instantPath = self.app.instance_path
                 folderPath = "\\".join(instantPath.split("\\")[0:-1])
@@ -220,7 +212,7 @@ class Storage:
 
             elif request.form['type'] == "askfordelete":
                 fileId = request.form['id'] 
-                userFiles = Modules.selectFromDB(f"SELECT id, name, folder FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                userFiles = Modules.selectFromDB("SELECT id, name, folder FROM files WHERE id = ? AND uploadUserId = ?", (fileId, self.acc.getUserId()))
                 if (len(userFiles) >= 1):
                     fileDelHash = Modules.md5Hash(str(userFiles[0][0] * self.acc.getUserId()))
                     session['deleteFileHash'] = fileDelHash
@@ -234,7 +226,7 @@ class Storage:
                     data['popupHTML'] = self.theme.loadFileWithTheme("popup/confirmdelete.twig", backpath=currPath, fileDeleteHash=fileDelHash, filename=userFiles[0][1], itemType=itemText)
             elif request.form['type'] == "sharemenu":
                 fileId = request.form['id']
-                files = Modules.selectFromDB(f"SELECT share, name FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                files = Modules.selectFromDB("SELECT share, name FROM files WHERE id = ? AND uploadUserId = ?", (fileId, self.acc.getUserId()))
                 if (len(files) == 1):
                     session['sharetargetId'] = fileId
                     shareFile = files[0]
@@ -244,9 +236,9 @@ class Storage:
 
                     usersData = []
                     if (shareFile[0] == 1): 
-                        users = Modules.selectFromDB(f"SELECT reciver FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{fileId}'")
+                        users = Modules.selectFromDB("SELECT reciver FROM usershare WHERE sender = ? AND fileId = ?", (self.acc.getUserId(), fileId))
                         for user in users:
-                            userInfo = Modules.selectFromDB(f"SELECT id, name, email FROM users WHERE id = '{user[0]}'")
+                            userInfo = Modules.selectFromDB("SELECT id, name, email FROM users WHERE id = ?", (user[0],))
                             if (len(userInfo) == 1):
                                 if (userInfo[0][0] != self.acc.getUserId() and users[0][0] == userInfo[0][0]):
                                     usersData.append([userInfo[0][0], userInfo[0][1], userInfo[0][2]])
@@ -259,63 +251,63 @@ class Storage:
                     self.alert.addAlert("Sharing enabled", "success")
                     if (val[0] == "allowed"):
                         if path == "":
-                            Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                            Modules.executeIntoDB("UPDATE files SET share= ?, sharePath=? WHERE id = ? AND uploadUserId = ?", ('1', '', fileId, self.acc.getUserId()))
                         else:
-                            sharedFolders = Modules.selectFromDB(f"SELECT id FROM files WHERE filehash = '{path}' AND uploadUserId = '{self.acc.getUserId()}' AND folder = '1' AND share = '1'")
+                            sharedFolders = Modules.selectFromDB("SELECT id FROM files WHERE filehash = ? AND uploadUserId = ? AND folder = ? AND share = ?", (path, self.acc.getUserId(), '1', '1'))
                             if (len(sharedFolders) == 1):
-                                Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='{path}' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'") # in shared folder
+                                Modules.executeIntoDB("UPDATE files SET share=?, sharePath = ? WHERE id = ? AND uploadUserId = ?", ('1', path, fileId, self.acc.getUserId())) # in shared folder
                             else:
-                                Modules.executeIntoDB(f"UPDATE files SET share='1', sharePath='' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'") # not in shared folder
+                                Modules.executeIntoDB("UPDATE files SET share=?, sharePath='' WHERE id = ? AND uploadUserId = ?", ('1', '', fileId, self.acc.getUserId())) # not in shared folder
                 else: 
                     self.alert.addAlert("Sharing disabled", "danger")
-                    Modules.executeIntoDB(f"UPDATE files SET share='0' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                    Modules.executeIntoDB("UPDATE files SET share=? WHERE id = ? AND uploadUserId = ?", ('0', fileId, self.acc.getUserId()))
             
             elif request.form['type'] == "updatesharedusers":
                 fileId = session['sharetargetId']
                 val = request.form.getlist('sharestate')
                 if (len(val) != 0):
                     if (val[0] == "allowed"):
-                        Modules.executeIntoDB(f"UPDATE files SET share='1' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                        Modules.executeIntoDB("UPDATE files SET share = ? WHERE id = ? AND uploadUserId = ?", ('1', fileId, self.acc.getUserId()))
                 else: 
-                    Modules.executeIntoDB(f"UPDATE files SET share='0' WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}'")
+                    Modules.executeIntoDB("UPDATE files SET share=? WHERE id = ? AND uploadUserId = ?", ('0', fileId, self.acc.getUserId()))
             
             elif request.form['type'] == "updateusers":
                 fileId = session['sharetargetId']
                 newMailList = request.form.getlist('addedmail')
-                targetFile = Modules.selectFromDB(f"SELECT id, folder, filehash FROM files WHERE id = '{fileId}' AND uploadUserId = '{self.acc.getUserId()}' AND share = '1'")
+                targetFile = Modules.selectFromDB("SELECT id, folder, filehash FROM files WHERE id = ? AND uploadUserId = ? AND share = ?", (fileId, self.acc.getUserId(), '1'))
                 if len(targetFile) == 1:
                     allToBeAdded = []
                     for mail in newMailList:
                         correctMail = mail.strip()
-                        result = Modules.selectFromDB(f"SELECT id, email FROM users WHERE email = '{correctMail}'")
+                        result = Modules.selectFromDB("SELECT id, email FROM users WHERE email = ?", (correctMail))
                         if (len(result) == 1):
                             if (result[0][0] != self.acc.getUserId()):
                                 allToBeAdded.append(result[0][0])
-                                if (len(Modules.selectFromDB(f"SELECT id FROM usershare WHERE sender = '{self.acc.getUserId()}' AND reciver = '{result[0][0]}' AND fileId = '{targetFile[0][0]}'")) == 0):
-                                    Modules.executeIntoDB(f"INSERT INTO usershare (sender, reciver, fileId, folder, filehash) VALUES ('{self.acc.getUserId()}', '{result[0][0]}', '{targetFile[0][0]}', '{targetFile[0][1]}', '{targetFile[0][2]}')")
+                                if (len(Modules.selectFromDB("SELECT id FROM usershare WHERE sender = ? AND reciver = ? AND fileId = ?"), (self.acc.getUserId(), result[0][0], targetFile[0][0])) == 0):
+                                    Modules.executeIntoDB("INSERT INTO usershare (sender, reciver, fileId, folder, filehash) VALUES (?, ?, ?, ?, ?)", (self.acc.getUserId(), result[0][0], targetFile[0][0], targetFile[0][1], targetFile[0][2]))
 
-                    currentShared = Modules.selectFromDB(f"SELECT reciver FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{targetFile[0][0]}'")
+                    currentShared = Modules.selectFromDB("SELECT reciver FROM usershare WHERE sender = ? AND fileId = ?", (self.acc.getUserId(), targetFile[0][0]))
                     if len(currentShared) >= 1:
                         for user in currentShared:
                             if (user[0] not in allToBeAdded):
-                                Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND reciver = '{user[0]}' AND fileId = '{targetFile[0][0]}'")
+                                Modules.executeIntoDB("DELETE FROM usershare WHERE sender = ? AND reciver = ? AND fileId = ?", (self.acc.getUserId(), user[0], targetFile[0][0]))
                     self.alert.addAlert("Users have been updated", "success")
 
             elif (session.get('deleteFileHash') != None):
                 if (session.get('deleteFileHash') == request.form['type']):
-                    fileData = Modules.selectFromDB(f"SELECT id, name, filehash, path, folder FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{session.get('deleteFileId')}' LIMIT 1")
+                    fileData = Modules.selectFromDB("SELECT id, name, filehash, path, folder FROM files WHERE uploadUserId = ? AND id = ? LIMIT 1", (self.acc.getUserId(), session.get('deleteFileId')))
                     if len(fileData) == 1:
                         if (fileData[0][4] == 0):
                             self.alert.addAlert("File has been deleted", "error")
-                            Modules.executeIntoDB(f"DELETE FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{fileData[0][0]}' AND filehash = '{fileData[0][2]}'")
-                            Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{fileData[0][0]}' AND filehash = '{fileData[0][2]}'")
+                            Modules.executeIntoDB("DELETE FROM files WHERE uploadUserId = ? AND id = ? AND filehash = ?", (self.acc.getUserId(), fileData[0][0], fileData[0][2]))
+                            Modules.executeIntoDB("DELETE FROM usershare WHERE sender = ? AND fileId = ? AND filehash = ?", (self.acc.getUserId(), fileData[0][0], fileData[0][2]))
                             filePath = f"data/userfiles/{self.acc.getUserUniqueCode()}/{fileData[0][2]}{self.splitFilename(fileData[0][1])[1]}"
                             if (os.path.exists(filePath)):
                                 os.remove(filePath)
                         else:
                             self.alert.addAlert("Folder has been deleted", "error")
 
-                            allUserFiles = Modules.selectFromDB(f"SELECT id, path, folder, name, filehash FROM files WHERE uploadUserId = '{self.acc.getUserId()}'")
+                            allUserFiles = Modules.selectFromDB("SELECT id, path, folder, name, filehash FROM files WHERE uploadUserId = ?", (self.acc.getUserId(),))
                            
                             targetedPath = fileData[0][1] + "/"
                             if (len(fileData[0][3]) != 0):
@@ -323,8 +315,8 @@ class Storage:
 
                             for uFile in allUserFiles:
                                 if (uFile[1].startswith(targetedPath) or uFile[1] == targetedPath[0:-1] or uFile[4] == fileData[0][2]):
-                                    Modules.executeIntoDB(f"DELETE FROM files WHERE uploadUserId = '{self.acc.getUserId()}' AND id = '{uFile[0]}'")
-                                    Modules.executeIntoDB(f"DELETE FROM usershare WHERE sender = '{self.acc.getUserId()}' AND fileId = '{uFile[0]}'")
+                                    Modules.executeIntoDB("DELETE FROM files WHERE uploadUserId = ? AND id = ?", (self.acc.getUserId(), uFile[0]))
+                                    Modules.executeIntoDB("DELETE FROM usershare WHERE sender = ? AND fileId = ?", (self.acc.getUserId(), uFile[0]))
                                     filePath = f"data/userfiles/{self.acc.getUserUniqueCode()}/{uFile[4]}{self.splitFilename(uFile[3])[1]}"
                                     if (os.path.exists(filePath) and uFile[2] == 0):
                                         os.remove(filePath)
@@ -366,15 +358,13 @@ class Storage:
                     return
 
                 if (int(fileId) in loadedSharedFiles):
-                    files = Modules.selectFromDB(f"SELECT path, filehash, name, uploadUserId FROM files WHERE id = '{fileId}' AND share = 1")
+                    files = Modules.selectFromDB("SELECT path, filehash, name, uploadUserId FROM files WHERE id = ? AND share = ?", (fileId, '1'))
                     if (len(files) == 1):
-                        userDetails = Modules.selectFromDB(f"SELECT uniqueCode FROM users WHERE id = '{files[0][3]}'")
+                        userDetails = Modules.selectFromDB("SELECT uniqueCode FROM users WHERE id = ?", (files[0][3], ))
                         if (len(userDetails) == 1):
                             fileToDownload = files[0]
                             instantPath = self.app.instance_path
                             folderPath = "\\".join(instantPath.split("\\")[0:-1])
-                            # Varför sluta detta fungera helt plötsliga KOLLA IGEN!
-                            # userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0], fileToDownload[0]))
                             userFilesPath = (os.path.join(folderPath ,"data", "userfiles", userDetails[0][0]))
                             fileExt = self.splitFilename(fileToDownload[2])[1]
                             return send_from_directory(userFilesPath, (fileToDownload[1] + fileExt), as_attachment=True, download_name=(fileToDownload[2]))
@@ -408,16 +398,16 @@ class Storage:
             pathToUploadTo = f"data/userfiles/{self.acc.getUserUniqueCode()}/"
             filename = f.filename
             filedata = f.read()
-            filesize = len(filedata) #Kan behövas fixas mer: https://stackoverflow.com/questions/15772975/flask-get-the-size-of-request-files-object
+            filesize = len(filedata)
             if (self.acc.getUserStorageLeft() - filesize < 0):
                 self.alert.addAlert("Not enough space left", "error")
                 return redirect("/storage/home")
-            if (len(Modules.selectFromDB(f"SELECT * FROM files WHERE uploadUserId = {self.acc.getUserId()}")) == 0 and not os.path.exists(pathToUploadTo)):
+            if (len(Modules.selectFromDB("SELECT * FROM files WHERE uploadUserId = ?", (self.acc.getUserId(),))) == 0 and not os.path.exists(pathToUploadTo)):
                 os.mkdir(pathToUploadTo)
             filehash = Modules.getUniqueCode(filename)
             name,ext = self.splitFilename(filename)
 
-            if (Modules.executeIntoDB(f"INSERT INTO files (path, name, filehash, uploadUserId, share, folder, filesize) VALUES ('{storagepath}', '{filename}', '{filehash}', {userId}, false, false, {filesize})") != None):
+            if (Modules.executeIntoDB("INSERT INTO files (path, name, filehash, uploadUserId, share, folder, filesize) VALUES (?, ?, ?, ?, false, false, ?)", (storagepath, filename, filehash, userId, filesize)) != None):
                 with open(pathToUploadTo + filehash + ext, "wb") as binary_file:
                     binary_file.write(filedata)
                     uploadedPath = "/storage/home"
@@ -438,7 +428,7 @@ class Storage:
         if(uploderId == -1):
             uploderId = self.acc.getUserId()
         
-        files = Modules.selectFromDB(f"SELECT (path, filehash) FROM files WHERE id = '{fileId}' AND uploadUserId = '{uploderId}'")
+        files = Modules.selectFromDB("SELECT (path, filehash) FROM files WHERE id = ? AND uploadUserId = ?", (fileId, uploderId))
         fileToDownload = files[0]
 
         return send_from_directory(os.path.join("data", "userfiles", self.acc.getUserUniqueCode(), fileToDownload[0], fileToDownload[1]))
@@ -463,7 +453,7 @@ class Storage:
 
                 filehash = Modules.getUniqueCode(foldername)
                 storagepath = self.getLastPath()
-                Modules.executeIntoDB(f"INSERT INTO files (path, name, filehash, uploadUserId, share, folder, filesize) VALUES ('{storagepath}', '{foldername}', '{filehash}', {userId}, false, true, {0})")
+                Modules.executeIntoDB("INSERT INTO files (path, name, filehash, uploadUserId, share, folder, filesize) VALUES (?, ?, ?, ?, false, true, ?)", (storagepath, foldername, filehash, userId, '0'))
                 self.alert.addAlert("Folder has been created", "default")
                 if (storagepath == ""):
                     return redirect("home")
@@ -474,7 +464,7 @@ class Storage:
     
 
     def storageUserSettingsPage(self):
-        res = Modules.selectFromDB(f"SELECT name, email FROM users WHERE id='{self.acc.getUserId()}'")
+        res = Modules.selectFromDB("SELECT name, email FROM users WHERE id = ?", (self.acc.getUserId(), ))
         if (len(res) != 1):
             return redirect("logout")
         data = self.getDataDefault()
@@ -496,7 +486,7 @@ class Storage:
                     text = "New password: "
                 data['popupHTML'] = self.theme.loadFileWithTheme("popup/askforupdate.twig", type=updateitem, text=text, backpath="storage/settings")
         elif request.method == "POST" and 'confpsw' in request.form:
-            res2 = Modules.selectFromDB(f"SELECT password, email FROM users WHERE id='{self.acc.getUserId()}'")
+            res2 = Modules.selectFromDB("SELECT password, email FROM users WHERE id = ?", (self.acc.getUserId(), ))
             hashpsw = Modules.hashPass(request.form['confpsw'])
             if (len(res2) != 1):
                 return redirect("logout")
@@ -525,15 +515,3 @@ class Storage:
             
         data['popupHTML'] = self.theme.loadFileWithTheme("popup/foldername.twig",theme=self.theme.getUserTheme(), exitpath = goBackPath)
         return self.theme.loadFileWithTheme("storage/home.twig", data=data)
-# TODO 
-# Visa användt utrymme i navbar [KLART]
-# Visa filsökvägen till mappen, typ under sök [KLART]
-# Fixa så sök fungerar [KLART]
-# Begränsa så man inte kan överstiga upload limit [KLART]
-# Lägg till så man kan dela filer [KLART]
-# Skapa userfiles mapp om den ej finns [KLART]
-# Lägg till teman [KLART]
-# Återställa lösen osv, kontohantering [Delvis]
-# Lägg till så att mappar delas korrekt
-# POPUP som typ "file upload success" och "Not enough space", använda sessions? [KLART]
-# Säkra upp för sql-injections, felaktiga inputs och dylikt

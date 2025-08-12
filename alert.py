@@ -21,12 +21,12 @@ class Alert:
         }
         return types.get(alertType, types['default'])
 
-    def addAlert(self, text, alertType="default"):
+    def addAlert(self, text, alertType="default", ms=5000):
         alertTypes = ["default", "success", "danger", "error", "dark"]
         if alertType not in alertTypes:
             raise ValueError("Invalid alert type. Expected one of: %s" % alertTypes)
         session_alerts = self.getSavedAlerts()
-        newAlert = {"color": self.getColorFromType(alertType), "text": text}
+        newAlert = {"color": self.getColorFromType(alertType), "text": text, "time": ms}
         if not isinstance(session_alerts, list):
             session_alerts = []
         session_alerts.append(newAlert)

@@ -40,10 +40,14 @@
             <a style="color: var(--fgColor)" href="/login">Login</a>
         </div> 
     </div>
+    <br>
+    <br>
+    {{ alert }}
     <script>
     if ( window.history.replaceState ) {
         window.history.replaceState( null, null, window.location.href );
     }
     </script>
+    <script src="{{url_for('static', filename=userTheme + '/js/script.js')}}"></script>
 </body>
 </html>

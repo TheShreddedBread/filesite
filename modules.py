@@ -16,20 +16,18 @@ class Modules:
     def hashPass(text):
         return hashlib.sha256(text.encode("utf-8")).hexdigest()
     
-    # TODO
-    # https://pythonassets.com/posts/reproducing-sql-injection-in-sqlite3-and-pymysql/
-    def selectFromDB(query):
+    def selectFromDB(query, enteredVars):
         connection = sqlite3.connect("data/data.db")
         cursor = connection.cursor()
-        cursor.execute(query)
+        cursor.execute(query, enteredVars)
         result = cursor.fetchall()
         connection.close()
         return result
     
-    def executeIntoDB(query):
+    def executeIntoDB(query, enteredVars):
         connection = sqlite3.connect("data/data.db")
         cursor = connection.cursor()
-        cursor.execute(query)
+        cursor.execute(query, enteredVars)
         connection.commit()
         lastId = cursor.lastrowid
         connection.close()

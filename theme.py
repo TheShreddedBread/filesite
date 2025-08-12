@@ -25,7 +25,7 @@ class Theme:
     def generateAlert(self):
         alert = self.alert.getNextAlert()
         if len(alert) > 0:
-            return self.loadFileWithTheme("popup/alert.twig", color=alert['color'], text=alert['text'], ms=5000)
+            return self.loadFileWithTheme("popup/alert.twig", color=alert['color'], text=alert['text'], ms=alert['time'])
         else:
             return ""
 
